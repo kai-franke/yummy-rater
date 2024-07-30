@@ -8,7 +8,7 @@ const roboto = Roboto({
 
 export const global = css`
   body {
-    background-color: blueviolet;
+    background-color: #f6f6f6;
     font-family: ${roboto.style.fontFamily};
   }
 `;
