@@ -10,5 +10,6 @@ export const global = css`
   body {
     background-color: #f6f6f6;
     font-family: ${roboto.style.fontFamily};
+    padding: 1em;
   }
 `;
