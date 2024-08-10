@@ -1,8 +1,10 @@
-import mongoose from "mongoose";
+import mongoose, { Model, models, model } from "mongoose";
+import { IUser } from "../types/user";
+import { IProduct } from "../types/product";
 
 const { Schema } = mongoose;
 
-const productSchema = new Schema(
+const productSchema = new Schema<IProduct>(
   {
     ean: { type: Number, required: true },
     name: String,
@@ -15,7 +17,7 @@ const productSchema = new Schema(
   { timestamps: true }
 );
 
-const userSchema = new Schema({
+const userSchema = new Schema<IUser>({
   provider_id: { type: String, required: true, index: true },
   first_name: String,
   last_name: String,
@@ -24,6 +26,6 @@ const userSchema = new Schema({
   products: [productSchema],
 });
 
-const User = mongoose.models.User || mongoose.model("User", userSchema);
+const User: Model<IUser> = models.User || model<IUser>("User", userSchema);
 
 export default User;
