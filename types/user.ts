@@ -11,7 +11,7 @@ export interface IUser extends Document {
 }
 
 export interface ISanitizedUser {
-  id: string;
+  _id: string;
   provider_id: string;
   first_name?: string;
   last_name?: string;

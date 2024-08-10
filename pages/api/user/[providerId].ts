@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getUserByProviderId } from "@/services/userService"; // Pfad zum Service anpassen
-import { ISanitizedUser } from "@/types/user"; // Import des passenden Typs
+import { getUserByProviderId } from "@/services/userService";
+import { ISanitizedUser } from "@/types/user";
 
 export default async function handler(
   request: NextApiRequest,
