@@ -17,13 +17,14 @@ import FormatBoldIcon from "@mui/icons-material/FormatBold";
 import FormatItalicIcon from "@mui/icons-material/FormatItalic";
 import FormatUnderlinedIcon from "@mui/icons-material/FormatUnderlined";
 import { useState } from "react";
+import Login from "@/components/Login";
 
 export default function Home() {
   const [formats, setFormats] = useState<string[]>([]);
   const [exclusiveFormats, setExclusiveFormats] = useState<string | null>(null);
 
   console.log("formats: ", formats);
-  console.log('exclusiveFormats: ', exclusiveFormats);
+  console.log("exclusiveFormats: ", exclusiveFormats);
   function handleFormatChange(
     _event: React.MouseEvent<HTMLElement>,
     updatedFormats: string[]
@@ -38,6 +39,7 @@ export default function Home() {
   }
   return (
     <>
+      <Login />
       <Head>
         <title>Yummy Rater</title>
         <meta
