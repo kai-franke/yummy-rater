@@ -6,7 +6,7 @@ const { Schema } = mongoose;
 
 const productSchema = new Schema<IProduct>(
   {
-    ean: { type: Number, required: true, unique: true, },
+    ean: { type: Number, required: true, unique: true },
     name: String,
     brand: String,
     description: String,
@@ -17,14 +17,17 @@ const productSchema = new Schema<IProduct>(
   { timestamps: true }
 );
 
-const userSchema = new Schema<IUser>({
-  provider_id: { type: String, required: true, unique: true, index: true },
-  first_name: String,
-  last_name: String,
-  profile_image: String,
-  email: String,
-  products: [productSchema],
-});
+const userSchema = new Schema<IUser>(
+  {
+    provider_id: { type: String, required: true, unique: true, index: true },
+    first_name: String,
+    last_name: String,
+    profile_image: String,
+    email: String,
+    products: [productSchema],
+  },
+  { timestamps: true }
+);
 
 const User: Model<IUser> = models.User || model<IUser>("User", userSchema);
 
