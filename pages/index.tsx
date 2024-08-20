@@ -23,9 +23,7 @@ import { useSession } from "next-auth/react";
 export default function Home() {
   const [formats, setFormats] = useState<string[]>([]);
   const [exclusiveFormats, setExclusiveFormats] = useState<string | null>(null);
-  const { data: session } = useSession();
-
-  console.log('session', session)
+  
 
   function handleFormatChange(
     _event: React.MouseEvent<HTMLElement>,
