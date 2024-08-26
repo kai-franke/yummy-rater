@@ -2,7 +2,7 @@ import type { AppProps } from "next/app";
 import { Global } from "@emotion/react";
 import { SessionProvider, useSession } from "next-auth/react";
 import useSWR from "swr";
-
+import { useEffect } from "react";
 import { global } from "@/global-style";
 import { ReactNode } from "react";
 
@@ -10,7 +10,18 @@ interface AuthProps {
   children: ReactNode;
 }
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+const fetcher = async (url: string) => {
+  const res = await fetch(url);
+
+  if (!res.ok) {
+    const errorData = await res.json();
+    const error = new Error(errorData);
+    (error as any).status = res.status;
+    throw error;
+  }
+
+  return res.json();
+};
 
 export default function App({
   Component,
@@ -18,13 +29,21 @@ export default function App({
 }: AppProps) {
   const { data: userData, error, isLoading } = useSWR("/api/user", fetcher);
 
+  useEffect(() => {
+    if (error && error.status === 404) {
+      fetch("/api/user/create", { method: "POST" })
+        .then((result) => result.json())
+        .then((data) => {
+          console.log("User created:", data);
+        });
+    }
+  }, [error]);
+
   if (isLoading) {
     return <h2>Is Loading...</h2>;
   }
 
-  if (error) {
-    return <h2>Error loading user data: {error.message}</h2>;
-  }
+  console.log("userData", userData);
 
   return (
     <>

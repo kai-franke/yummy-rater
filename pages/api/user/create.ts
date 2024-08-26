@@ -2,19 +2,18 @@ import dbConnect from "@/lib/db/dbconnect";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
 import { getToken } from "next-auth/jwt";
-import { findUserByProviderId } from "@/services/userService";
+import { createUser, findUserByProviderId } from "@/services/userService";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
   request: NextApiRequest,
   response: NextApiResponse
 ) {
-  if (request.method !== "GET") {
+  if (request.method !== "POST") {
     return response.status(405).end(`Method ${request.method} Not Allowed`);
   }
 
   const session = await getServerSession(request, response, authOptions);
-  
   if (!session) {
     return response.status(401).json({ message: "Unauthorized" });
   }
@@ -24,11 +23,13 @@ export default async function handler(
   const token = await getToken({ req: request });
   const providerId = token?.sub;
 
-  const user = await findUserByProviderId(providerId!);
-
-  if (!user) {
-    return response.status(404).json({ message: `User ${providerId} not found` });
+  const existingUser = await findUserByProviderId(providerId!);
+  if (existingUser) {
+    return response
+      .status(409)
+      .json({ message: "User already exists" });
   }
 
-  response.status(200).json(user);
+  const newUser = await createUser(providerId!);
+  response.status(201).json(newUser);
 }
