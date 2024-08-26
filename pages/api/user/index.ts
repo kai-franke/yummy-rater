@@ -14,7 +14,7 @@ export default async function handler(
     return response.status(401).json({ message: "Unauthorized" });
   }
 
-  dbConnect();
+  await dbConnect();
   const token = await getToken({ req: request });
   const providerId = token?.sub;
 

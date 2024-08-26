@@ -10,18 +10,21 @@ interface AuthProps {
   children: ReactNode;
 }
 
-const fetcher = (url: any) => fetch(url).then((res) => res.json());
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function App({
   Component,
   pageProps: { session, ...pageProps },
 }: AppProps) {
   const { data: userData, error, isLoading } = useSWR("/api/user", fetcher);
+
   if (isLoading) {
     return <h2>Is Loading...</h2>;
   }
-  console.log("userData", userData);
-  console.log("error", error);
+
+  if (error) {
+    return <h2>Error loading user data: {error.message}</h2>;
+  }
 
   return (
     <>
@@ -39,7 +42,7 @@ function Auth({ children }: AuthProps) {
   const { status } = useSession({ required: true });
 
   if (status === "loading") {
-    return <div>Is loading</div>;
+    return <div>Is Loading...</div>;
   }
   return children;
 }
