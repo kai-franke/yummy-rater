@@ -1,7 +1,8 @@
-import { Document } from "mongoose";
+import { Document, ObjectId } from "mongoose";
 import { IProduct } from "./product";
 
 export interface IUser extends Document {
+  _id: ObjectId;
   provider_id: string;
   first_name?: string;
   last_name?: string;
@@ -11,8 +12,7 @@ export interface IUser extends Document {
 }
 
 export interface ISanitizedUser {
-  _id: string;
-  provider_id: string;
+  _id: ObjectId;
   first_name?: string;
   last_name?: string;
   profile_image?: string;

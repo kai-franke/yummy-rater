@@ -36,7 +36,7 @@ export default function App({
 
   useEffect(() => {
     if (error && error.status === 404) {
-      fetch("/api/user/create", { method: "POST" })
+      fetch("/api/user", { method: "POST" })
         .then((result) => result.json())
         .then(() => {
           mutate();
