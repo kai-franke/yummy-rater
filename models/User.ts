@@ -6,7 +6,7 @@ const { Schema } = mongoose;
 
 const productSchema = new Schema<IProduct>(
   {
-    ean: { type: Number, required: true, unique: true },
+    ean: { type: Number, required: true },
     name: String,
     brand: String,
     description: String,
