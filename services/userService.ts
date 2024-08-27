@@ -26,7 +26,6 @@ export async function findUserByProviderId(
 export async function createUser(providerId: string): Promise<IUser> {
   const newUser = new User({
     provider_id: providerId,
-    products: [],
   });
   return await newUser.save();
 }
