@@ -27,17 +27,22 @@ export default function App({
   Component,
   pageProps: { session, ...pageProps },
 }: AppProps) {
-  const { data: userData, error, isLoading } = useSWR("/api/user", fetcher);
+  const {
+    data: userData,
+    error,
+    isLoading,
+    mutate,
+  } = useSWR("/api/user", fetcher);
 
   useEffect(() => {
     if (error && error.status === 404) {
       fetch("/api/user/create", { method: "POST" })
         .then((result) => result.json())
-        .then((data) => {
-          console.log("User created:", data);
+        .then(() => {
+          mutate();
         });
     }
-  }, [error]);
+  }, [error, mutate]);
 
   if (isLoading) {
     return <h2>Is Loading...</h2>;

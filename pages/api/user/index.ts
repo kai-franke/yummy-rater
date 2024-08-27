@@ -14,7 +14,7 @@ export default async function handler(
   }
 
   const session = await getServerSession(request, response, authOptions);
-  
+
   if (!session) {
     return response.status(401).json({ message: "Unauthorized" });
   }
@@ -27,7 +27,7 @@ export default async function handler(
   const user = await findUserByProviderId(providerId!);
 
   if (!user) {
-    return response.status(404).json({ message: `User ${providerId} not found` });
+    return response.status(404).json({ message: `User not found` });
   }
 
   response.status(200).json(user);
