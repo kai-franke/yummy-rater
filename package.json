@@ -13,10 +13,12 @@
     "@emotion/styled": "^11.11.5",
     "@mui/icons-material": "^5.16.5",
     "@mui/material": "^5.16.5",
+    "mongoose": "^8.5.2",
     "next": "14.2.4",
     "next-auth": "^4.24.7",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "swr": "^2.2.5"
   },
   "devDependencies": {
     "@types/node": "^20",
