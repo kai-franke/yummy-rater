@@ -8,6 +8,8 @@ export async function findUserByProviderId(
   if (!user) {
     return null;
   }
+  console.log("user im SERVICE: ", user);
+
   const sanitizedUser: ISanitizedUser = {
     _id: user._id,
     first_name: user.first_name,
