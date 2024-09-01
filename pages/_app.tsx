@@ -5,6 +5,7 @@ import useSWR from "swr";
 import { useEffect } from "react";
 import { global } from "@/global-style";
 import { ReactNode } from "react";
+import Header from "@/components/Header";
 
 interface AuthProps {
   children: ReactNode;
@@ -48,13 +49,12 @@ export default function App({
     return <h2>Is Loading...</h2>;
   }
 
-  console.log("userData", userData);
-
   return (
     <>
       <SessionProvider session={session}>
         <Auth>
           <Global styles={global} />
+          <Header />
           <Component {...pageProps} />
         </Auth>
       </SessionProvider>
