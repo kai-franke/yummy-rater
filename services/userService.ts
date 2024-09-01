@@ -4,10 +4,8 @@ import { IUser, ISanitizedUser } from "@/types/user";
 export async function findUserByProviderId(
   providerId: string
 ): Promise<ISanitizedUser | null> {
-  console.log("providerId: ", providerId);
 
   const user = await User.findOne({ provider_id: providerId });
-  console.log("user im SERVICE: ", user);
   if (!user) {
     return null;
   }

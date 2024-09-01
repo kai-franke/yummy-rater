@@ -23,7 +23,6 @@ export default async function handler(
 
   if (request.method === "GET") {
     const user = await findUserByProviderId(providerId!);
-    console.log("user im GET request: ", user);
 
     if (!user) {
       response.status(404).json({ message: `User not found` });
