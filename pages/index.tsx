@@ -1,5 +1,4 @@
 import Head from "next/head";
-import Login from "@/components/Login";
 import Header from "@/components/Header";
 import { Box, Typography } from "@mui/material";
 
