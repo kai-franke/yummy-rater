@@ -3,15 +3,9 @@ import Login from "./Login";
 
 function Header() {
   return (
-    <AppBar position="static">
+    <AppBar position="sticky">
       <Toolbar>
-        <Typography
-          variant="h5"
-          component="h1"
-          sx={{ flexGrow: 1 }}
-          color="inherit"
-          aria-label="Yummy Rater App Name"
-        >
+        <Typography variant="h5" component="h1" sx={{ flexGrow: 1 }}>
           Yummy Rater
         </Typography>
         <Login />
