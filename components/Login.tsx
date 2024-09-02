@@ -6,23 +6,13 @@ export default function Login() {
 
   if (session) {
     return (
-      <Button
-        onClick={() => signOut()}
-        variant="outlined"
-        color="inherit"
-        aria-label="Sign out"
-      >
+      <Button onClick={() => signOut()} variant="outlined" color="inherit">
         Sign out
       </Button>
     );
   }
   return (
-    <Button
-      onClick={() => signIn()}
-      variant="outlined"
-      color="inherit"
-      aria-label="Sign in"
-    >
+    <Button onClick={() => signIn()} variant="outlined" color="inherit">
       Sign in
     </Button>
   );
