@@ -1,12 +1,9 @@
 import Head from "next/head";
-import Login from "@/components/Login";
-
+import { Box, Typography } from "@mui/material";
 
 export default function Home() {
- 
   return (
     <>
-      <Login />
       <Head>
         <title>Yummy Rater</title>
         <meta
@@ -17,7 +14,11 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <h2>Hallo</h2>
+        <Box component="section" m={3}>
+          <Typography variant="h5" component="h2" gutterBottom>
+            Home
+          </Typography>
+        </Box>
       </main>
     </>
   );
