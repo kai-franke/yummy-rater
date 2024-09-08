@@ -10,17 +10,14 @@ export default function Scan() {
   };
 
   return (
-    <main>
-      <Box m={3} component="section">
-        <Typography variant="h5" component="h2">
-          Scan
-        </Typography>
-      </Box>
+    <Box m={3} component="main">
+      <Typography variant="h5" component="h2">
+        Scan
+      </Typography>
       <Scanner onScan={handleScan} />
-
       <Typography variant="body1" sx={{ mt: 2 }}>
         Scanned Data: {data}
       </Typography>
-    </main>
+    </Box>
   );
 }
