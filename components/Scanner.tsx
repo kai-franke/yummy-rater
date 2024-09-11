@@ -55,7 +55,7 @@ export default function Scanner({ onScan }: ScannerProps) {
             constraints: {
               facingMode: "environment",
             },
-            target: document.querySelector("#video")!, // useRef not working :(
+            target: document.querySelector("#video")!,
           },
           decoder: {
             readers: ["ean_reader"],
@@ -66,15 +66,15 @@ export default function Scanner({ onScan }: ScannerProps) {
             console.error("Error initializing Quagga: ", err);
             return;
           }
-          Quagga.start(); // Start scanning
+          Quagga.start();
         }
       );
 
       Quagga.onDetected((result) => {
         const code = result.codeResult.code;
         if (code) {
-          onScan(code); // Only call onScan if the code is not null
-          stopScanning(); // Stop the scanner after a successful scan
+          onScan(code);
+          toggleScanning();
         } else {
           console.warn("Scanned code is null");
         }
@@ -87,12 +87,8 @@ export default function Scanner({ onScan }: ScannerProps) {
     }
   }, [isScanning, onScan]);
 
-  function startScanning() {
-    setIsScanning(true);
-  }
-
-  function stopScanning() {
-    setIsScanning(false);
+  function toggleScanning() {
+    setIsScanning(!isScanning);
   }
 
   return (
@@ -110,7 +106,7 @@ export default function Scanner({ onScan }: ScannerProps) {
       <Button
         variant="contained"
         color="primary"
-        onClick={isScanning ? stopScanning : startScanning}
+        onClick={toggleScanning}
         sx={{ mt: 2 }}
       >
         {isScanning ? "Stop" : "Scan"}
