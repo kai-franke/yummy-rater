@@ -7,6 +7,11 @@ const roboto = Roboto({
 });
 
 export const global = css`
+  :root {
+    --scanner-background: #e0e0e0;
+    --scanner-focus-marks: #ffffff85;
+  }
+
   body {
     background-color: #f6f6f6;
     font-family: ${roboto.style.fontFamily};
