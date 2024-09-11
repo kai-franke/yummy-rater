@@ -15,7 +15,7 @@ export default function Scan() {
         Scan
       </Typography>
       <Scanner onScan={handleScan} />
-      <Typography variant="body1" sx={{ mt: 2 }}>
+      <Typography variant="body1" mt={2}>
         Scanned Data: {data}
       </Typography>
     </Box>
