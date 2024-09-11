@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Quagga from "@ericblade/quagga2";
 import { Box, Button } from "@mui/material";
 import { ScannerProps } from "@/types/scanner";
@@ -45,6 +45,7 @@ const videoElementCss = css`
 
 export default function Scanner({ onScan }: ScannerProps) {
   const [isScanning, setIsScanning] = useState(false);
+  const videoRef = useRef();
 
   useEffect(() => {
     if (isScanning) {
@@ -55,7 +56,7 @@ export default function Scanner({ onScan }: ScannerProps) {
             constraints: {
               facingMode: "environment",
             },
-            target: document.querySelector("#video")!,
+            target: videoRef.current,
           },
           decoder: {
             readers: ["ean_reader"],
@@ -100,7 +101,7 @@ export default function Scanner({ onScan }: ScannerProps) {
         <FocusMark rotation={90} style={{ top: "15%", right: "6%" }} />
         <FocusMark rotation={270} style={{ bottom: "15%", left: "6%" }} />
         <FocusMark rotation={180} style={{ bottom: "15%", right: "6%" }} />
-        {isScanning && <VideoBox id="video" />}
+        {isScanning && <VideoBox ref={videoRef} id="video" />}
       </ScannerContainer>
 
       <Button
