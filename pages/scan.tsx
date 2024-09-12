@@ -5,7 +5,7 @@ import { getProductByEAN } from "@/services/productService";
 import { IProductNoMongoose } from "@/types/product";
 
 export default function Scan() {
-  const [ean, setEan] = useState("Not Found");
+  const [ean, setEan] = useState("No Code");
   const [product, setProduct] = useState<IProductNoMongoose | null>(null);
   const [error, setError] = useState(null);
 
@@ -14,11 +14,17 @@ export default function Scan() {
   };
 
   useEffect(() => {
-    getProductByEAN(ean)
-      .then((data) => {
-        setProduct(data);
-      })
-      .catch((err) => setError(err));
+    if (ean && ean !== "No Code") {
+      setError(null);
+      getProductByEAN(ean)
+        .then((data) => {
+          setProduct(data);
+        })
+        .catch((err) => {
+          setError(err);
+          setProduct(null);
+        });
+    }
   }, [ean]);
 
   return (
@@ -30,6 +36,7 @@ export default function Scan() {
       <Typography variant="body1" mt={2}>
         Scanned Data: {ean}
       </Typography>
+      {error && <Typography color="error">ERROR</Typography>}
       <Typography variant="body1" mt={2}>
         EAN: {product?.ean.toString()}
         <br />
