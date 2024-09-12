@@ -1,4 +1,20 @@
-export async function findProductByEAN(ean: string) {
+import { IProductNoMongoose } from "@/types/product";
+
+interface APIResponse {
+  code: string;
+  product?: {
+    brands?: string;
+    product_name_de?: string;
+    product_name?: string;
+    image_url?: string;
+    generic_name_de?: string;
+    generic_name?: string;
+  };
+}
+
+export async function getProductByEAN(
+  ean: string
+): Promise<IProductNoMongoose | null> {
   try {
     const response = await fetch(
       `https://world.openfoodfacts.org/api/v3/product/${ean}.json`
@@ -8,8 +24,26 @@ export async function findProductByEAN(ean: string) {
       throw new Error(`Failed to fetch product data for EAN ${ean}`);
     }
 
-    const data = await response.json();
-    return data;
+    const data: APIResponse = await response.json();
+
+    if (data.product) {
+      const sanitizedProduct: IProductNoMongoose = {
+        ean: Number(data.code),
+        name:
+          data.product.product_name_de ||
+          data.product.product_name ||
+          "Unknown product name",
+        brand: data.product.brands || "Unknown brand name",
+        image: data.product.image_url || "",
+        description:
+          data.product.generic_name_de || data.product.generic_name_de || "",
+        user_rating: undefined,
+        user_note: undefined,
+      };
+      return sanitizedProduct;
+    } else {
+      return null;
+    }
   } catch (error) {
     console.error("Error fetching product data:", error);
     throw error;
