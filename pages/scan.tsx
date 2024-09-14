@@ -7,7 +7,7 @@ import { IProductNoMongoose } from "@/types/product";
 export default function Scan() {
   const [ean, setEan] = useState("No Code");
   const [product, setProduct] = useState<IProductNoMongoose | null>(null);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   const handleScan = (scannedData: string) => {
     setEan(scannedData);
@@ -21,7 +21,7 @@ export default function Scan() {
           setProduct(data);
         })
         .catch((err) => {
-          setError(err);
+          setError(err.message);
           setProduct(null);
         });
     }
@@ -36,22 +36,32 @@ export default function Scan() {
       <Typography variant="body1" mt={2}>
         Scanned Data: {ean}
       </Typography>
-      {error && <Typography color="error">ERROR</Typography>}
-      <Typography variant="body1" mt={2}>
-        EAN: {product?.ean.toString()}
-        <br />
-        Name: {product?.name}
-        <br />
-        Brand: {product?.brand}
-        <br />
-        Description: {product?.description}
-        <br />
-        User Rating: {product?.user_rating}
-        <br />
-        User Note: {product?.user_note}
-      </Typography>
-      {product?.image && (
-        <Box mt={2} component="img" alt="product Image" src={product?.image} />
+      {error ? (
+        <Typography color="error">{error}</Typography>
+      ) : (
+        <>
+          <Typography variant="body1" mt={2}>
+            EAN: {product?.ean.toString()}
+            <br />
+            Name: {product?.name}
+            <br />
+            Brand: {product?.brand}
+            <br />
+            Description: {product?.description}
+            <br />
+            User Rating: {product?.user_rating}
+            <br />
+            User Note: {product?.user_note}
+          </Typography>
+          {product?.image && (
+            <Box
+              mt={2}
+              component="img"
+              alt="product Image"
+              src={product?.image}
+            />
+          )}
+        </>
       )}
     </Box>
   );

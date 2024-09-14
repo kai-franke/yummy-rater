@@ -21,7 +21,7 @@ export async function getProductByEAN(
     );
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch product data for EAN ${ean}`);
+      throw new Error("Product not found");
     }
 
     const data: APIResponse = await response.json();
@@ -45,7 +45,6 @@ export async function getProductByEAN(
       return null;
     }
   } catch (error) {
-    console.error("Error fetching product data:", error);
     throw error;
   }
 }
