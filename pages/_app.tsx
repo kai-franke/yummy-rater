@@ -6,6 +6,8 @@ import { useEffect } from "react";
 import { global } from "@/global-style";
 import { ReactNode } from "react";
 import Header from "@/components/Header";
+import Navigation from "@/components/Navigation";
+import Layout from "@/components/Layout";
 
 interface AuthProps {
   children: ReactNode;
@@ -54,8 +56,9 @@ export default function App({
       <SessionProvider session={session}>
         <Auth>
           <Global styles={global} />
-          <Header />
-          <Component {...pageProps} />
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
         </Auth>
       </SessionProvider>
     </>
