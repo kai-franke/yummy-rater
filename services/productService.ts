@@ -21,7 +21,7 @@ export async function getProductByEAN(
     );
 
     if (!response.ok) {
-      throw new Error("Product not found");
+      throw new Error(`${response.status}`);
     }
 
     const data: APIResponse = await response.json();
@@ -36,13 +36,13 @@ export async function getProductByEAN(
         brand: data.product.brands || "Unknown brand name",
         image: data.product.image_url || "",
         description:
-          data.product.generic_name_de || data.product.generic_name_de || "",
+          data.product.generic_name_de || data.product.generic_name || "",
         user_rating: undefined,
         user_note: undefined,
       };
       return sanitizedProduct;
     } else {
-      return null;
+      throw new Error("Product data not available");
     }
   } catch (error) {
     throw error;

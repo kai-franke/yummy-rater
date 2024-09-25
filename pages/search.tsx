@@ -30,7 +30,7 @@ export default function Scan() {
   return (
     <Box m={3} component="main">
       <Typography variant="h5" component="h2">
-        Scan
+        Search
       </Typography>
       <Scanner onScan={handleScan} />
       <Typography variant="body1" mt={2}>

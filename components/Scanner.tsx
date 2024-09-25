@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import Quagga from "@ericblade/quagga2";
-import { Box, Button } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import { ScannerProps } from "@/types/scanner";
 import styled from "@emotion/styled";
 import { Global, css } from "@emotion/react";
@@ -45,10 +45,12 @@ const videoElementCss = css`
 
 export default function Scanner({ onScan }: ScannerProps) {
   const [isScanning, setIsScanning] = useState(false);
+  const [hasError, setHasError] = useState(false);
   const videoRef = useRef();
 
   useEffect(() => {
     if (isScanning) {
+      setHasError(false);
       Quagga.init(
         {
           inputStream: {
@@ -64,6 +66,8 @@ export default function Scanner({ onScan }: ScannerProps) {
         },
         (err) => {
           if (err) {
+            setHasError(true);
+            setIsScanning(false);
             console.error("Error initializing Quagga: ", err);
             return;
           }
@@ -101,6 +105,7 @@ export default function Scanner({ onScan }: ScannerProps) {
         <FocusMark rotation={90} style={{ top: "15%", right: "6%" }} />
         <FocusMark rotation={270} style={{ bottom: "15%", left: "6%" }} />
         <FocusMark rotation={180} style={{ bottom: "15%", right: "6%" }} />
+        {hasError && <Typography>Bitte Kamera berechtigen</Typography>}
         {isScanning && <VideoBox ref={videoRef} id="video" />}
       </ScannerContainer>
 
