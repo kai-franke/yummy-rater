@@ -15,7 +15,7 @@ import { useState } from "react";
 export default function Navigation() {
   const [value, setValue] = useState(0);
   return (
-    <Box sx={{ width: 500 }}>
+    // <Box sx={{ width: 500 }}>
       <Paper
         sx={{
           position: "fixed",
@@ -64,6 +64,6 @@ export default function Navigation() {
           />
         </BottomNavigation>
       </Paper>
-    </Box>
+    // </Box>
   );
 }
