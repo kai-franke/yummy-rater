@@ -9,9 +9,15 @@ export default function Scan() {
   const [product, setProduct] = useState<IProductNoMongoose | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const handleScan = (scannedData: string) => {
+  function handleScan(scannedData: string) {
     setEan(scannedData);
-  };
+  }
+
+  function handleStartScanning() {
+    setEan("No Code");
+    setProduct(null);
+    setError(null);
+  }
 
   useEffect(() => {
     if (ean && ean !== "No Code") {
@@ -32,7 +38,7 @@ export default function Scan() {
       <Typography variant="h5" component="h2">
         Search
       </Typography>
-      <Scanner onScan={handleScan} />
+      <Scanner onScan={handleScan} onStartScanning={handleStartScanning} />
       <Typography variant="body1" mt={2}>
         Scanned Data: {ean}
       </Typography>

@@ -43,7 +43,7 @@ const videoElementCss = css`
   }
 `;
 
-export default function Scanner({ onScan }: ScannerProps) {
+export default function Scanner({ onScan, onStartScanning }: ScannerProps) {
   const [isScanning, setIsScanning] = useState(false);
   const [hasError, setHasError] = useState(false);
   const videoRef = useRef();
@@ -93,7 +93,11 @@ export default function Scanner({ onScan }: ScannerProps) {
   }, [isScanning, onScan]);
 
   function toggleScanning() {
-    setIsScanning(!isScanning);
+    const newIsScanning = !isScanning;
+    setIsScanning(newIsScanning);
+    if (newIsScanning && onStartScanning) {
+      onStartScanning();
+    }
   }
 
   return (
