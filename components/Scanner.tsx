@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import Quagga from "@ericblade/quagga2";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Alert } from "@mui/material";
 import { ScannerProps } from "@/types/scanner";
 import styled from "@emotion/styled";
 import { Global, css } from "@emotion/react";
@@ -41,6 +41,13 @@ const videoElementCss = css`
     align-self: center;
     flex-basis: 100%;
   }
+`;
+
+const CameraErrorMessage = styled(Alert)`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 `;
 
 export default function Scanner({ onScan, onStartScanning }: ScannerProps) {
@@ -109,7 +116,11 @@ export default function Scanner({ onScan, onStartScanning }: ScannerProps) {
         <FocusMark rotation={90} style={{ top: "15%", right: "6%" }} />
         <FocusMark rotation={270} style={{ bottom: "15%", left: "6%" }} />
         <FocusMark rotation={180} style={{ bottom: "15%", right: "6%" }} />
-        {hasError && <Typography>Bitte Kamera berechtigen</Typography>}
+        {hasError && (
+          <CameraErrorMessage severity="error">
+            Please allow access to the camera.
+          </CameraErrorMessage>
+        )}
         {isScanning && <VideoBox ref={videoRef} id="video" />}
       </ScannerContainer>
 
