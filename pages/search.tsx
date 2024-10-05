@@ -1,11 +1,11 @@
-import { Box, Typography } from "@mui/material";
+import { Alert, AlertTitle, Box, Typography } from "@mui/material";
 import { useState, useEffect } from "react";
 import Scanner from "@/components/Scanner";
 import { getProductByEAN } from "@/services/productService";
 import { IProductNoMongoose } from "@/types/product";
 
 export default function Scan() {
-  const [ean, setEan] = useState("No Code");
+  const [ean, setEan] = useState("");
   const [product, setProduct] = useState<IProductNoMongoose | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -14,13 +14,13 @@ export default function Scan() {
   }
 
   function handleStartScanning() {
-    setEan("No Code");
+    setEan("");
     setProduct(null);
     setError(null);
   }
 
   useEffect(() => {
-    if (ean && ean !== "No Code") {
+    if (ean) {
       setError(null);
       getProductByEAN(ean)
         .then((data) => {
@@ -43,11 +43,11 @@ export default function Scan() {
         Scanned Data: {ean}
       </Typography>
       {error ? (
-        <Typography color="error">{error}</Typography>
+        <Alert severity="warning">{error}</Alert>
       ) : (
         <>
           <Typography variant="body1" mt={2}>
-            EAN: {product?.ean.toString()}
+            EAN: {product?.ean ? product.ean.toString() : "No code"}
             <br />
             Name: {product?.name}
             <br />

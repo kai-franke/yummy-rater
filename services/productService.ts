@@ -26,7 +26,6 @@ export async function getProductByEAN(
           throw new Error("API not responding as expected.");
         case 404:
           throw new Error("No product data available.");
-
         default:
           throw new Error(`Error: ${response.status}`);
       }
