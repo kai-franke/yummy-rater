@@ -21,7 +21,15 @@ export async function getProductByEAN(
     );
 
     if (!response.ok) {
-      throw new Error(`${response.status}`);
+      switch (response.status) {
+        case 400:
+          throw new Error("API not responding as expected.");
+        case 404:
+          throw new Error("No product data available.");
+
+        default:
+          throw new Error(`Error: ${response.status}`);
+      }
     }
 
     const data: APIResponse = await response.json();
