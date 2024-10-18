@@ -42,7 +42,6 @@ export default async function handler(
     image: image || undefined,
     user_rating: user_rating ? Number(user_rating) : undefined,
     user_note: user_note || undefined,
-    // 'createdAt' wird von Mongoose automatisch gesetzt
   };
 
   // Finde den Benutzer
@@ -52,7 +51,6 @@ export default async function handler(
     return res.status(404).json({ message: "User not found" });
   }
 
-  // Füge das Produkt hinzu
   user.products.push(productData);
   await user.save();
 
