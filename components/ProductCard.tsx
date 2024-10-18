@@ -1,11 +1,13 @@
 import { IProduct } from "@/types/product";
 import {
+  Box,
   Button,
   Card,
   CardActions,
   CardContent,
   CardMedia,
   Rating,
+  Tooltip,
   Typography,
 } from "@mui/material";
 
@@ -28,12 +30,20 @@ function ProductCard({ product }: { product: IProduct }) {
         <Typography variant="body2" mb={2.5}>
           {product.description}
         </Typography>
-        <Rating
-          defaultValue={0}
-          precision={0.5}
-          value={product.user_rating}
-          readOnly
-        />
+        <Tooltip title={product.user_rating} followCursor>
+          {
+            // Tooltip doesn't work directly on Rating component
+          }
+          <Box sx={{ display: "inline-block" }}>
+            <Rating
+              defaultValue={0}
+              precision={0.5}
+              value={product.user_rating}
+              readOnly
+            />
+          </Box>
+        </Tooltip>
+
         <Typography variant="body1" mt={0.5}>
           {product.user_note}
         </Typography>

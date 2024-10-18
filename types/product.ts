@@ -1,6 +1,6 @@
 import { Document } from "mongoose";
 
-export interface IProduct extends Document {
+export interface IProduct {
   ean: number;
   name?: string;
   brand?: string;
