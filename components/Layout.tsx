@@ -10,7 +10,7 @@ export default function Layout({ children }: AuthProps) {
   return (
     <>
       <Header />
-      <Box component="main" m={3}>
+      <Box component="main" m={3} mb={10}>
         {children}
       </Box>
       <Navigation />

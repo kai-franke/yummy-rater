@@ -8,4 +8,5 @@ export interface IProduct extends Document {
   image?: string;
   user_rating?: number;
   user_note?: string;
+  createdAt?: Date;
 }
