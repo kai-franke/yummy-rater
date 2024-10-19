@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
-import { Typography } from "@mui/material";
+import { Button, Slider, TextField, Typography } from "@mui/material";
 
 export default function AddProduct() {
   const [ean, setEan] = useState("");
@@ -43,65 +43,75 @@ export default function AddProduct() {
         Add product
       </Typography>
       <form onSubmit={handleSubmit}>
-        <div>
-          <label>EAN:</label>
-          <input
-            type="number"
-            value={ean}
-            onChange={(e) => setEan(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Name:</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-        </div>
-        <div>
-          <label>Marke:</label>
-          <input
-            type="text"
-            value={brand}
-            onChange={(e) => setBrand(e.target.value)}
-          />
-        </div>
-        <div>
-          <label>Beschreibung:</label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </div>
-        <div>
-          <label>Bild-URL:</label>
-          <input
-            type="text"
-            value={image}
-            onChange={(e) => setImage(e.target.value)}
-          />
-        </div>
-        <div>
-          <label>Benutzerbewertung:</label>
-          <input
-            type="number"
-            value={userRating}
-            onChange={(e) => setUserRating(e.target.value)}
-            min="0"
-            max="5"
-            step="0.1"
-          />
-        </div>
-        <div>
-          <label>Benutzeranmerkung:</label>
-          <textarea
-            value={userNote}
-            onChange={(e) => setUserNote(e.target.value)}
-          />
-        </div>
-        <button type="submit">Produkt hinzufügen</button>
+        <TextField
+          label="EAN"
+          type="number"
+          value={ean}
+          onChange={(e) => setEan(e.target.value)}
+          required
+          fullWidth
+          margin="normal"
+        />
+        <TextField
+          label="Name"
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          fullWidth
+          margin="normal"
+        />
+
+        <TextField
+          label="Marke"
+          type="text"
+          value={brand}
+          onChange={(e) => setBrand(e.target.value)}
+          fullWidth
+          margin="normal"
+        />
+        <TextField
+          label="Beschreibung"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          multiline
+          rows={4}
+          fullWidth
+          margin="normal"
+        />
+        <TextField
+          label="Bild-URL"
+          type="text"
+          value={image}
+          onChange={(e) => setImage(e.target.value)}
+          fullWidth
+          margin="normal"
+        />
+        <Typography gutterBottom>Benutzerbewertung</Typography>
+        <Slider
+          value={userRating ? Number(userRating) : 0}
+          onChange={(_, newValue) => setUserRating(newValue.toString())}
+          step={0.1}
+          min={0}
+          max={5}
+          valueLabelDisplay="auto"
+        />
+        <TextField
+          label="Benutzeranmerkung"
+          value={userNote}
+          onChange={(e) => setUserNote(e.target.value)}
+          multiline
+          rows={4}
+          fullWidth
+          margin="normal"
+        />
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          sx={{ mt: 2 }}
+        >
+          Produkt hinzufügen
+        </Button>
       </form>
     </>
   );
