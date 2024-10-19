@@ -1,9 +1,7 @@
 import { IProduct } from "@/types/product";
 import {
   Box,
-  Button,
   Card,
-  CardActions,
   CardContent,
   CardMedia,
   Rating,
@@ -13,12 +11,25 @@ import {
 
 function ProductCard({ product }: { product: IProduct }) {
   return (
-    <Card sx={{ maxWidth: 350 }}>
-      <Box sx={{ aspectRatio: '1 / 1' }}>
+    <Card
+      sx={{
+        width: "100%",
+        maxWidth: 350,
+      }}
+    >
+      <Box sx={{ position: "relative", paddingTop: "100%" }}>
         <CardMedia
           component="img"
           image={product.image ? product.image : "/no_product_image.jpg"}
           alt={product.name}
+          sx={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%", // Not sure if this is needed
+            height: "100%",
+            objectFit: "cover",
+          }}
         />
       </Box>
       <CardContent>
@@ -32,9 +43,6 @@ function ProductCard({ product }: { product: IProduct }) {
           {product.description}
         </Typography>
         <Tooltip title={product.user_rating} followCursor>
-          {
-            // Tooltip doesn't work directly on Rating component
-          }
           <Box sx={{ display: "inline-block" }}>
             <Rating
               defaultValue={0}
@@ -44,17 +52,30 @@ function ProductCard({ product }: { product: IProduct }) {
             />
           </Box>
         </Tooltip>
-
         <Typography variant="body1" mt={0.5}>
           {product.user_note}
         </Typography>
         <Typography variant="body2" color="grey.500" mt={2.5}>
           EAN: {product.ean}
         </Typography>
-        <CardActions></CardActions>
       </CardContent>
     </Card>
   );
 }
 
-export default ProductCard;
+function ProductCardContainer({ children }: { children: React.ReactNode }) {
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        flexWrap: "wrap",
+        gap: 3,
+        justifyContent: "center",
+      }}
+    >
+      {children}
+    </Box>
+  );
+}
+
+export { ProductCard, ProductCardContainer };
