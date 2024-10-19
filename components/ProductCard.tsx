@@ -13,13 +13,14 @@ import {
 
 function ProductCard({ product }: { product: IProduct }) {
   return (
-    <Card sx={{ maxWidth: 400 }}>
-      <CardMedia
-        height="250"
-        component="img"
-        image={product.image}
-        alt={product.name}
-      />
+    <Card sx={{ maxWidth: 350 }}>
+      <Box sx={{ aspectRatio: '1 / 1' }}>
+        <CardMedia
+          component="img"
+          image={product.image ? product.image : "/no_product_image.jpg"}
+          alt={product.name}
+        />
+      </Box>
       <CardContent>
         <Typography variant="body2" color="textSecondary" mb={0.5}>
           {product.brand}
