@@ -8,7 +8,7 @@ export interface IUser extends Document {
   last_name?: string;
   profile_image?: string;
   email?: string;
-  products?: IProduct[];
+  products: IProduct[];
 }
 
 export interface ISanitizedUser {
@@ -17,5 +17,5 @@ export interface ISanitizedUser {
   last_name?: string;
   profile_image?: string;
   email?: string;
-  products?: IProduct[];
+  products: IProduct[];
 }
