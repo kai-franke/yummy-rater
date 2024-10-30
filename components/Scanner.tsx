@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import Quagga from "@ericblade/quagga2";
-import { Box, Button } from "@mui/material";
+import { Box, Button, Alert } from "@mui/material";
 import { ScannerProps } from "@/types/scanner";
 import styled from "@emotion/styled";
 import { Global, css } from "@emotion/react";
@@ -43,12 +43,21 @@ const videoElementCss = css`
   }
 `;
 
-export default function Scanner({ onScan }: ScannerProps) {
+const CameraErrorMessage = styled(Alert)`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+`;
+
+export default function Scanner({ onScan, onStartScanning }: ScannerProps) {
   const [isScanning, setIsScanning] = useState(false);
+  const [hasError, setHasError] = useState(false);
   const videoRef = useRef();
 
   useEffect(() => {
     if (isScanning) {
+      setHasError(false);
       Quagga.init(
         {
           inputStream: {
@@ -64,6 +73,10 @@ export default function Scanner({ onScan }: ScannerProps) {
         },
         (err) => {
           if (err) {
+            if (err.name === "NotAllowedError") {
+              setHasError(true);
+            }
+            setIsScanning(false);
             console.error("Error initializing Quagga: ", err);
             return;
           }
@@ -89,7 +102,11 @@ export default function Scanner({ onScan }: ScannerProps) {
   }, [isScanning, onScan]);
 
   function toggleScanning() {
-    setIsScanning(!isScanning);
+    const newIsScanning = !isScanning;
+    setIsScanning(newIsScanning);
+    if (newIsScanning && onStartScanning) {
+      onStartScanning();
+    }
   }
 
   return (
@@ -101,6 +118,11 @@ export default function Scanner({ onScan }: ScannerProps) {
         <FocusMark rotation={90} style={{ top: "15%", right: "6%" }} />
         <FocusMark rotation={270} style={{ bottom: "15%", left: "6%" }} />
         <FocusMark rotation={180} style={{ bottom: "15%", right: "6%" }} />
+        {hasError && (
+          <CameraErrorMessage severity="error">
+            Please allow access to the camera.
+          </CameraErrorMessage>
+        )}
         {isScanning && <VideoBox ref={videoRef} id="video" />}
       </ScannerContainer>
 

@@ -9,3 +9,13 @@ export interface IProduct extends Document {
   user_rating?: number;
   user_note?: string;
 }
+
+export interface IProductNoMongoose {
+  ean: number;
+  name?: string;
+  brand?: string;
+  description?: string;
+  image?: string;
+  user_rating?: number;
+  user_note?: string;
+}
