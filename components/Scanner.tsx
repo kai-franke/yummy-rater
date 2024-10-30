@@ -73,7 +73,9 @@ export default function Scanner({ onScan, onStartScanning }: ScannerProps) {
         },
         (err) => {
           if (err) {
-            setHasError(true);
+            if (err.name === "NotAllowedError") {
+              setHasError(true);
+            }
             setIsScanning(false);
             console.error("Error initializing Quagga: ", err);
             return;
