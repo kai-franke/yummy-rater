@@ -5,7 +5,8 @@ import useSWR from "swr";
 import { useEffect } from "react";
 import { global } from "@/global-style";
 import { ReactNode } from "react";
-import Header from "@/components/Header";
+import Layout from "@/components/Layout";
+import Head from "next/head";
 
 interface AuthProps {
   children: ReactNode;
@@ -51,11 +52,21 @@ export default function App({
 
   return (
     <>
+      <Head>
+        <title>Yummy Rater</title>
+        <meta
+          name="description"
+          content="The best app to rate your yummy products"
+        />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       <SessionProvider session={session}>
         <Auth>
           <Global styles={global} />
-          <Header />
-          <Component {...pageProps} />
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
         </Auth>
       </SessionProvider>
     </>
