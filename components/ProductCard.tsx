@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 
-function ProductCard({ product }: { product: IProduct }) {
+export default function ProductCard({ product }: { product: IProduct }) {
   return (
     <Card
       sx={{
@@ -56,21 +56,4 @@ function ProductCard({ product }: { product: IProduct }) {
       </CardContent>
     </Card>
   );
-}
-
-function ProductCardContainer({ children }: { children: React.ReactNode }) {
-  return (
-    <Box
-      sx={{
-        display: "flex",
-        flexWrap: "wrap",
-        gap: 3,
-        justifyContent: "center",
-      }}
-    >
-      {children}
-    </Box>
-  );
-}
-
-export { ProductCard, ProductCardContainer };
+};

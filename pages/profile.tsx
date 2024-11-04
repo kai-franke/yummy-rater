@@ -1,4 +1,5 @@
-import { ProductCard, ProductCardContainer } from "@/components/ProductCard";
+import ProductCard from "@/components/ProductCard";
+import ProductCardContainer from "@/components/ProductCardContainer";
 import { IUser } from "@/types/user";
 import { Typography } from "@mui/material";
 
