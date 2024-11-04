@@ -1,13 +1,10 @@
 import ProductCard from "@/components/ProductCard";
 import ProductCardContainer from "@/components/ProductCardContainer";
-import { IUser } from "@/types/user";
+import { PageProps } from "@/types/pageProps";
 import { Typography } from "@mui/material";
 
-interface ProfilePageProps {
-  userData: IUser;
-}
 
-export default function ProfilePage({ userData }: ProfilePageProps) {
+export default function ProfilePage({ userData }: PageProps) {
   const allProducts = userData?.products;
 
   return (
