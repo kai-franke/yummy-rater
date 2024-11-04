@@ -1,6 +1,6 @@
 import { Document } from "mongoose";
 
-export interface IProduct extends Document {
+export interface IProduct {
   ean: number;
   name?: string;
   brand?: string;
@@ -8,6 +8,7 @@ export interface IProduct extends Document {
   image?: string;
   user_rating?: number;
   user_note?: string;
+  createdAt?: Date;
 }
 
 export interface IProductNoMongoose {
