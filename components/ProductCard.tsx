@@ -17,18 +17,13 @@ function ProductCard({ product }: { product: IProduct }) {
         maxWidth: 350,
       }}
     >
-      <Box sx={{ position: "relative", paddingTop: "100%" }}>
+      <Box>
         <CardMedia
           component="img"
           image={product.image ? product.image : "/no_product_image.jpg"}
           alt={product.name}
           sx={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%", // Not sure if this is needed
-            height: "100%",
-            objectFit: "cover",
+            aspectRatio: "1/1",
           }}
         />
       </Box>
