@@ -1,17 +1,14 @@
 import { useRouter } from "next/router";
 import { Alert, Typography } from "@mui/material";
-import { IUser } from "@/types/user";
+import { PageProps } from "@/types/pageProps";
 import { IProduct } from "@/types/product";
-import { ProductCard, ProductCardContainer } from "@/components/ProductCard";
+import ProductCard from "@/components/ProductCard";
+import ProductCardContainer from "@/components/ProductCardContainer";
 
-interface ProductPageProps {
-  userData: IUser;
-}
-
-export default function ProductPage({ userData }: ProductPageProps) {
+export default function ProductPage({ userData }: PageProps) {
   const router = useRouter();
   const { ean } = router.query;
-  const productToShow = userData?.products?.find(
+  const productToShow = userData.products?.find(
     (product: IProduct) => product.ean.toString() === ean
   );
 
