@@ -1,28 +1,34 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
-import { Button, Slider, TextField, Typography } from "@mui/material";
+import { Button, TextField, Typography, Rating, Alert } from "@mui/material";
+import Scanner from "@/components/Scanner";
+import { getProductByEAN } from "@/services/productService";
+import Image from "next/image";
+import useSWR from "swr";
 
 export default function AddProduct() {
-  const [ean, setEan] = useState("");
-  const [name, setName] = useState("");
-  const [brand, setBrand] = useState("");
-  const [description, setDescription] = useState("");
-  const [image, setImage] = useState("");
-  const [userRating, setUserRating] = useState("");
-  const [userNote, setUserNote] = useState("");
+  const [ean, setEan] = useState<string | undefined>("");
+  const [name, setName] = useState<string | undefined>("");
+  const [brand, setBrand] = useState<string | undefined>("");
+  const [description, setDescription] = useState<string | undefined>("");
+  const [image, setImage] = useState<string | undefined>("");
+  const [userRating, setUserRating] = useState(0);
+  const [userNote, setUserNote] = useState<string | undefined>("");
   const router = useRouter();
+  const { mutate } = useSWR("/api/user");
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
     const productData = {
       ean: Number(ean),
-      name: name || undefined,
-      brand: brand || undefined,
-      description: description || undefined,
-      image: image || undefined,
-      user_rating: userRating ? Number(userRating) : undefined,
-      user_note: userNote || undefined,
+      name: name,
+      brand: brand,
+      description: description,
+      image: image,
+      user_rating: userRating,
+      user_note: userNote,
     };
 
     await fetch("/api/user/add-product", {
@@ -31,17 +37,64 @@ export default function AddProduct() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(productData),
+    }).catch((e) => {
+      setError(e.message);
     });
 
-    // Nach dem Hinzufügen zur Startseite navigieren oder eine Bestätigungsseite anzeigen
-    router.push("/");
-  };
+    await mutate();
+    router.push("/profile");
 
+    // Nach dem Hinzufügen zur Startseite navigieren oder eine Bestätigungsseite anzeigen
+  };
+  async function handleScan(scannedData: string) {
+    setEan(scannedData);
+    try {
+      const data = await getProductByEAN(scannedData);
+
+      setName(data?.name);
+      setBrand(data?.brand);
+      setDescription(data?.description);
+      setImage(data?.image);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        // Zugriff auf 'message' ist sicher
+        setError(error.message);
+      } else {
+        console.error("Ein unbekannter Fehler ist aufgetreten", error);
+      }
+    }
+
+
+  }
+
+  function handleStartScanning() {
+    setError(null);
+    setEan("");
+    setName("");
+    setBrand("");
+    setDescription("");
+    setImage("");
+    setUserRating(0);
+    setUserNote("");
+  }
+  function handleChangeRating(
+    _event: React.ChangeEvent<{}>,
+    newValue: number | null
+  ) {
+    setUserRating(Number(newValue));
+  }
   return (
     <>
       <Typography variant="h5" component="h2" gutterBottom>
         Add product
       </Typography>
+      <Scanner onScan={handleScan} onStartScanning={handleStartScanning} />
+      {error && (
+        <Alert severity="warning">
+          {error}
+          {ean}
+        </Alert>
+      )}
       <form onSubmit={handleSubmit}>
         <TextField
           label="EAN"
@@ -86,15 +139,15 @@ export default function AddProduct() {
           fullWidth
           margin="normal"
         />
+        {image && <Image src={image} alt="bild" width={200} height={200} />}
         <Typography gutterBottom>Benutzerbewertung</Typography>
-        <Slider
-          value={userRating ? Number(userRating) : 0}
-          onChange={(_, newValue) => setUserRating(newValue.toString())}
-          step={0.1}
-          min={0}
-          max={5}
-          valueLabelDisplay="auto"
+
+        <Rating
+          defaultValue={0}
+          value={userRating}
+          onChange={handleChangeRating}
         />
+
         <TextField
           label="Benutzeranmerkung"
           value={userNote}

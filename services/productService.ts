@@ -49,7 +49,7 @@ export async function getProductByEAN(
       };
       return sanitizedProduct;
     } else {
-      throw new Error("Product data not available");
+      throw new Error("Product data not available!!!");
     }
   } catch (error) {
     throw error;
