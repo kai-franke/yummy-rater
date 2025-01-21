@@ -11,7 +11,7 @@ export default function Modal({
   open,
   onClose,
   title,
-  content,
+  children,
   actions = [],
 }: ModalProps) {
   return (
@@ -19,10 +19,10 @@ export default function Modal({
       open={open}
       onClose={onClose}
       fullWidth
-      aria-labelledby="modal-title"
+      aria-label={title || "Dialog"}
     >
-      {title && <DialogTitle id="modal-title">{title}</DialogTitle>}
-      <DialogContent>{content}</DialogContent>
+      {title && <DialogTitle>{title}</DialogTitle>}
+      <DialogContent>{children}</DialogContent>
       <DialogActions>
         {actions.map((action, index) => (
           <Button
@@ -30,6 +30,7 @@ export default function Modal({
             onClick={action.onClick}
             variant={action.variant}
             color={action.color}
+            startIcon={action.startIcon}
           >
             {action.label}
           </Button>
