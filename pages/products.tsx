@@ -1,5 +1,18 @@
+import { useState } from "react";
+
 import { PageProps } from "@/types/pageProps";
-import { Avatar, Box, Paper, Rating, Tooltip, Typography } from "@mui/material";
+import { ModalAction } from "@/types/modal";
+import Modal from "@/components/Modal";
+import ProductCard from "@/components/ProductCard";
+
+import {
+  Avatar,
+  Box,
+  Paper,
+  Rating,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import {
   DataGrid,
   GridColDef,
@@ -8,10 +21,6 @@ import {
   GridRowsProp,
 } from "@mui/x-data-grid";
 import ImageNotSupportedIcon from "@mui/icons-material/ImageNotSupported";
-import { useState } from "react";
-import Modal from "@/components/Modal";
-import ProductCard from "@/components/ProductCard";
-import { ModalAction } from "@/types/modal";
 import CloseIcon from "@mui/icons-material/Close";
 
 export default function Products({ userData }: PageProps) {
