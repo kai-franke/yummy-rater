@@ -1,21 +1,19 @@
 import {
-  Box,
   BottomNavigation,
   BottomNavigationAction,
   Paper,
 } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
-import SearchIcon from "@mui/icons-material/Search";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import AddIcon from "@mui/icons-material/Add";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import Link from "next/link";
 
 import { useState } from "react";
 export default function Navigation() {
   const [value, setValue] = useState(0);
   return (
-    // <Box sx={{ width: 500 }}>
       <Paper
         sx={{
           position: "fixed",
@@ -39,9 +37,9 @@ export default function Navigation() {
             component={Link}
           />
           <BottomNavigationAction
-            href="/search"
-            label="Search"
-            icon={<SearchIcon />}
+            href="/products"
+            label="My Products"
+            icon={<ShoppingCartIcon />}
             component={Link}
           />
           <BottomNavigationAction
@@ -64,6 +62,5 @@ export default function Navigation() {
           />
         </BottomNavigation>
       </Paper>
-    // </Box>
   );
 }
