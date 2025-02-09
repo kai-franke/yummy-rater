@@ -1,12 +1,11 @@
 import {
-  Box,
   BottomNavigation,
   BottomNavigationAction,
   Paper,
 } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
-import SearchIcon from "@mui/icons-material/Search";
 import FavoriteIcon from "@mui/icons-material/Favorite";
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import AddIcon from "@mui/icons-material/Add";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import Link from "next/link";
@@ -39,9 +38,9 @@ export default function Navigation() {
             component={Link}
           />
           <BottomNavigationAction
-            href="/search"
-            label="Search"
-            icon={<SearchIcon />}
+            href="/products"
+            label="My Products"
+            icon={<ShoppingCartIcon />}
             component={Link}
           />
           <BottomNavigationAction
