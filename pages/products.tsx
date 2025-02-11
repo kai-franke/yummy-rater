@@ -11,6 +11,7 @@ import {
   Paper,
   TableCell,
   TableRow,
+  TableSortLabel,
   Tooltip,
   Typography,
 } from "@mui/material";
@@ -22,14 +23,19 @@ import Avatar from "@mui/material/Avatar";
 import Rating from "@mui/material/Rating";
 import ImageNotSupportedIcon from "@mui/icons-material/ImageNotSupported";
 import CloseIcon from "@mui/icons-material/Close";
+import { set } from "mongoose";
 
 export default function Products({ userData }: PageProps) {
-  const allProducts = userData?.products.slice().sort((a, b) => {
-    const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-    const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-    return dateB - dateA;
-  }); // useMemo verwenden?
-  const [selectedProduct, setSelectedProduct] = useState(allProducts[0]);
+  const [productsToShow, setProductsToShow] = useState<IProduct[]>([
+    ...userData?.products.slice().sort((a, b) => {
+      const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return dateB - dateA;
+    }),
+  ]);
+  const [sorted, setSorted] = useState(false);
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc" >("asc");
+  const [selectedProduct, setSelectedProduct] = useState(productsToShow[0]);
   const [modalOpen, setModalOpen] = useState(false);
   const modalActions: ModalAction[] = [
     {
@@ -45,7 +51,18 @@ export default function Products({ userData }: PageProps) {
     setModalOpen(true);
   }
 
-  if (!allProducts || allProducts.length === 0) {
+  function handleSort() {
+    setSorted(true);
+    setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+    const sortedProducts = productsToShow.slice().sort((a, b) => {
+      const ratingA = a.user_rating ?? 0;
+      const ratingB = b.user_rating ?? 0;
+      return sortDirection === "asc" ? ratingA - ratingB : ratingB - ratingA;
+    });
+    setProductsToShow(sortedProducts) ;
+  }
+
+  if (!productsToShow || productsToShow.length === 0) {
     return <Typography>Keine Produkte vorhanden</Typography>;
   }
 
@@ -62,12 +79,19 @@ export default function Products({ userData }: PageProps) {
                 <TableCell>Image</TableCell>
                 <TableCell>Product Name</TableCell>
                 <TableCell>Brand</TableCell>
-                <TableCell>User Rating</TableCell>
+                <TableCell>
+                  User Rating
+                  <TableSortLabel
+                    active={sorted}
+                    direction={sortDirection}
+                    onClick={handleSort}
+                  />
+                </TableCell>
                 <TableCell>User Note</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {allProducts.map((product) => (
+              {productsToShow.map((product) => (
                 <TableRow
                   key={product.ean}
                   onClick={() => handleProductClick(product)}
