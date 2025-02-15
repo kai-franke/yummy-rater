@@ -12,10 +12,13 @@ import {
   Rating,
   Tooltip,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import {
   DataGrid,
   GridColDef,
+  GridColumnVisibilityModel,
   GridRenderCellParams,
   GridRowParams,
   GridRowsProp,
@@ -24,6 +27,8 @@ import ImageNotSupportedIcon from "@mui/icons-material/ImageNotSupported";
 import CloseIcon from "@mui/icons-material/Close";
 
 export default function Products({ userData }: PageProps) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const allProducts = userData?.products.slice().sort((a, b) => {
     const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
     const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
@@ -103,6 +108,14 @@ export default function Products({ userData }: PageProps) {
     product, // speichert zusätzlich das gesamte Produkt als Objekt
   }));
 
+  const columnVisibilityModel: GridColumnVisibilityModel = {
+    image: !isMobile,
+    brand: !isMobile,
+    user_note: !isMobile,
+    name: true,
+    user_rating: true,
+  };
+
   const handleRowClick = (params: GridRowParams) => {
     setSelectedProduct(params.row.product);
     setModalOpen(true);
@@ -125,6 +138,7 @@ export default function Products({ userData }: PageProps) {
             rowHeight={80}
             onRowClick={handleRowClick}
             disableRowSelectionOnClick
+            columnVisibilityModel={columnVisibilityModel}
           />
         </Box>
       </Paper>
