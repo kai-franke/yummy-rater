@@ -117,7 +117,7 @@ export default function Products({ userData }: PageProps) {
           sx={{ display: "flex", justifyContent: "space-between", padding: 1 }}
         >
           <TextField
-            sx={{ my: 1, minWidth: "320px" }}
+            sx={{ my: 1, minWidth: "50%" }}
             label="Filter"
             placeholder="e.g. Applepie or 4478738324"
             variant="outlined"
@@ -146,6 +146,7 @@ export default function Products({ userData }: PageProps) {
           <Button
             onClick={() => handleSort("createdAt", "desc")}
             disabled={sortConfig.key === "createdAt"}
+            size="small"
           >
             Default Sorting
           </Button>
