@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Modal from "@/components/Modal";
 import ProductCard from "@/components/ProductCard";
@@ -43,6 +43,11 @@ export default function Products({ userData }: PageProps) {
       startIcon: <CloseIcon />,
     },
   ];
+
+  // initiale Sortierung nach Erstellungsdatum
+  useEffect(() => {
+    sortProducts("createdAt", "desc");
+  }, []);
 
   function sortProducts(key: keyof IProduct, direction: "asc" | "desc") {
     const sortedProducts = [...products].sort((a, b) => {
