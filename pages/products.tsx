@@ -43,11 +43,6 @@ export default function Products({ userData }: PageProps) {
     },
   ];
 
-  function handleProductClick(product: IProduct) {
-    setSelectedProduct(product);
-    setModalOpen(true);
-  }
-
   function sortProducts(key: keyof IProduct, direction: "asc" | "desc") {
     const sortedProducts = [...products].sort((a, b) => {
       let valA = a[key];
@@ -75,6 +70,11 @@ export default function Products({ userData }: PageProps) {
         : "asc";
     setSortConfig({ key, direction: newDirection });
     sortProducts(key, newDirection);
+  }
+
+  function handleProductClick(product: IProduct) {
+    setSelectedProduct(product);
+    setModalOpen(true);
   }
 
   if (!products || products.length === 0) {
@@ -169,7 +169,16 @@ export default function Products({ userData }: PageProps) {
                       </Box>
                     </Tooltip>
                   </TableCell>
-                  <TableCell>{product.user_note}</TableCell>
+                  <TableCell
+                    sx={{
+                      maxWidth: "250px",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    {product.user_note}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
