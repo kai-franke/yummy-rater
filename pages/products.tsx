@@ -24,6 +24,7 @@ import Avatar from "@mui/material/Avatar";
 import Rating from "@mui/material/Rating";
 import ImageNotSupportedIcon from "@mui/icons-material/ImageNotSupported";
 import CloseIcon from "@mui/icons-material/Close";
+import SearchOffIcon from "@mui/icons-material/SearchOff";
 
 export default function Products({ userData }: PageProps) {
   const initialProducts = userData?.products || [];
@@ -75,10 +76,6 @@ export default function Products({ userData }: PageProps) {
   function handleProductClick(product: IProduct) {
     setSelectedProduct(product);
     setModalOpen(true);
-  }
-
-  if (!products || products.length === 0) {
-    return <Typography>Keine Produkte vorhanden</Typography>;
   }
 
   return (
@@ -140,47 +137,58 @@ export default function Products({ userData }: PageProps) {
               </TableRow>
             </TableHead>
             <TableBody>
-              {products.map((product) => (
-                <TableRow
-                  key={product.ean}
-                  onClick={() => handleProductClick(product)}
-                  hover
-                  sx={{ cursor: "pointer" }}
-                >
-                  <TableCell>
-                    <Avatar
-                      src={product.image}
-                      alt={product.name}
-                      variant="rounded"
-                    >
-                      <ImageNotSupportedIcon />
-                    </Avatar>
-                  </TableCell>
-                  <TableCell>{product.name}</TableCell>
-                  <TableCell>{product.brand}</TableCell>
-                  <TableCell>
-                    <Tooltip title={product.user_rating} followCursor>
-                      <Box sx={{ display: "inline-block" }}>
-                        <Rating
-                          precision={0.5}
-                          value={product.user_rating}
-                          readOnly
-                        />
-                      </Box>
-                    </Tooltip>
-                  </TableCell>
-                  <TableCell
-                    sx={{
-                      maxWidth: "250px",
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                    }}
-                  >
-                    {product.user_note}
+              {!products || products.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} align="center" sx={{ py: 10 }}>
+                    <SearchOffIcon color="disabled" fontSize="large" />
+                    <Typography variant="body1" gutterBottom>
+                      No products found
+                    </Typography>
                   </TableCell>
                 </TableRow>
-              ))}
+              ) : (
+                products.map((product) => (
+                  <TableRow
+                    key={product.ean}
+                    onClick={() => handleProductClick(product)}
+                    hover
+                    sx={{ cursor: "pointer" }}
+                  >
+                    <TableCell>
+                      <Avatar
+                        src={product.image}
+                        alt={product.name}
+                        variant="rounded"
+                      >
+                        <ImageNotSupportedIcon />
+                      </Avatar>
+                    </TableCell>
+                    <TableCell>{product.name}</TableCell>
+                    <TableCell>{product.brand}</TableCell>
+                    <TableCell>
+                      <Tooltip title={product.user_rating} followCursor>
+                        <Box sx={{ display: "inline-block" }}>
+                          <Rating
+                            precision={0.5}
+                            value={product.user_rating}
+                            readOnly
+                          />
+                        </Box>
+                      </Tooltip>
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        maxWidth: "250px",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
+                      {product.user_note}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </TableContainer>
