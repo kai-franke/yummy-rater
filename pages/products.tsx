@@ -8,9 +8,11 @@ import { ModalAction } from "@/types/modal";
 
 import {
   Box,
+  Button,
   Paper,
   TableCell,
   TableRow,
+  TableSortLabel,
   Tooltip,
   Typography,
 } from "@mui/material";
@@ -24,12 +26,13 @@ import ImageNotSupportedIcon from "@mui/icons-material/ImageNotSupported";
 import CloseIcon from "@mui/icons-material/Close";
 
 export default function Products({ userData }: PageProps) {
-  const allProducts = userData?.products.slice().sort((a, b) => {
-    const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-    const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-    return dateB - dateA;
-  }); // useMemo verwenden?
-  const [selectedProduct, setSelectedProduct] = useState(allProducts[0]);
+  const initialProducts = userData?.products || [];
+  const [products, setProducts] = useState<IProduct[]>(initialProducts);
+  const [sortConfig, setSortConfig] = useState<{
+    key: keyof IProduct;
+    direction: "asc" | "desc";
+  }>({ key: "createdAt", direction: "desc" });
+  const [selectedProduct, setSelectedProduct] = useState(products[0]);
   const [modalOpen, setModalOpen] = useState(false);
   const modalActions: ModalAction[] = [
     {
@@ -45,7 +48,36 @@ export default function Products({ userData }: PageProps) {
     setModalOpen(true);
   }
 
-  if (!allProducts || allProducts.length === 0) {
+  function sortProducts(key: keyof IProduct, direction: "asc" | "desc") {
+    const sortedProducts = [...products].sort((a, b) => {
+      let valA = a[key];
+      let valB = b[key];
+
+      if (valA instanceof Date && valB instanceof Date) {
+        valA = valA.getTime();
+        valB = valB.getTime();
+      } else {
+        valA = typeof valA === "string" ? valA?.toLowerCase() ?? "" : valA ?? 0;
+        valB = typeof valB === "string" ? valB?.toLowerCase() ?? "" : valB ?? 0;
+      }
+
+      if (valA < valB) return direction === "asc" ? -1 : 1;
+      if (valA > valB) return direction === "asc" ? 1 : -1;
+      return 0;
+    });
+    setProducts(sortedProducts);
+  }
+
+  function handleSort(key: keyof IProduct, direction?: "asc" | "desc") {
+    const newDirection =
+      direction || (sortConfig.key === key && sortConfig.direction === "asc")
+        ? "desc"
+        : "asc";
+    setSortConfig({ key, direction: newDirection });
+    sortProducts(key, newDirection);
+  }
+
+  if (!products || products.length === 0) {
     return <Typography>Keine Produkte vorhanden</Typography>;
   }
 
@@ -54,20 +86,61 @@ export default function Products({ userData }: PageProps) {
       <Typography variant="h5" component="h2" gutterBottom>
         My Products
       </Typography>
+
       <Paper>
+        <Box sx={{ display: "flex", justifyContent: "flex-end", padding: 1 }}>
+          <Button
+            onClick={() => handleSort("createdAt", "desc")}
+            disabled={sortConfig.key === "createdAt"}
+          >
+            Default Sorting
+          </Button>
+        </Box>
         <TableContainer sx={{ maxHeight: "calc(100vh - 200px)" }}>
           <Table size="small" aria-label="Products table" stickyHeader>
             <TableHead>
               <TableRow>
                 <TableCell>Image</TableCell>
-                <TableCell>Product Name</TableCell>
-                <TableCell>Brand</TableCell>
-                <TableCell>User Rating</TableCell>
+                <TableCell>
+                  <TableSortLabel
+                    active={sortConfig.key === "name"}
+                    direction={
+                      sortConfig.key === "name" ? sortConfig.direction : "asc"
+                    }
+                    onClick={() => handleSort("name")}
+                  >
+                    Product Name
+                  </TableSortLabel>
+                </TableCell>
+                <TableCell>
+                  <TableSortLabel
+                    active={sortConfig.key === "brand"}
+                    direction={
+                      sortConfig.key === "brand" ? sortConfig.direction : "asc"
+                    }
+                    onClick={() => handleSort("brand")}
+                  >
+                    Brand
+                  </TableSortLabel>
+                </TableCell>
+                <TableCell>
+                  <TableSortLabel
+                    active={sortConfig.key === "user_rating"}
+                    direction={
+                      sortConfig.key === "user_rating"
+                        ? sortConfig.direction
+                        : "asc"
+                    }
+                    onClick={() => handleSort("user_rating")}
+                  >
+                    User Rating{" "}
+                  </TableSortLabel>
+                </TableCell>
                 <TableCell>User Note</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {allProducts.map((product) => (
+              {products.map((product) => (
                 <TableRow
                   key={product.ean}
                   onClick={() => handleProductClick(product)}
