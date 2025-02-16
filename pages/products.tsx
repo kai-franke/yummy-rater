@@ -114,10 +114,15 @@ export default function Products({ userData }: PageProps) {
 
       <Paper>
         <Box
-          sx={{ display: "flex", justifyContent: "space-between", padding: 1 }}
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            padding: 1,
+            backgroundColor: "ghostwhite",
+          }}
         >
           <TextField
-            sx={{ my: 1, minWidth: "50%" }}
+            sx={{ my: 1, minWidth: "50%", backgroundColor: "white" }}
             label="Filter"
             placeholder="e.g. Applepie or 4478738324"
             variant="outlined"
@@ -154,9 +159,15 @@ export default function Products({ userData }: PageProps) {
         <TableContainer sx={{ maxHeight: "calc(100vh - 200px)" }}>
           <Table size="small" aria-label="Products table" stickyHeader>
             <TableHead>
-              <TableRow>
-                <TableCell>Image</TableCell>
-                <TableCell>
+              <TableRow
+                sx={{
+                  "& th": {
+                    backgroundColor: "ghostwhite",
+                  },
+                }}
+              >
+                <TableCell></TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>
                   <TableSortLabel
                     active={sortConfig.key === "name"}
                     direction={
@@ -167,7 +178,7 @@ export default function Products({ userData }: PageProps) {
                     Product Name
                   </TableSortLabel>
                 </TableCell>
-                <TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>
                   <TableSortLabel
                     active={sortConfig.key === "brand"}
                     direction={
@@ -178,7 +189,7 @@ export default function Products({ userData }: PageProps) {
                     Brand
                   </TableSortLabel>
                 </TableCell>
-                <TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>
                   <TableSortLabel
                     active={sortConfig.key === "user_rating"}
                     direction={
@@ -191,7 +202,7 @@ export default function Products({ userData }: PageProps) {
                     User Rating{" "}
                   </TableSortLabel>
                 </TableCell>
-                <TableCell>User Note</TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>User Note</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
