@@ -7,6 +7,7 @@ import { global } from "@/global-style";
 import { ReactNode } from "react";
 import Layout from "@/components/Layout";
 import Head from "next/head";
+import Splashscreen from "@/components/Splashscreen";
 
 interface AuthProps {
   children: ReactNode;
@@ -47,7 +48,7 @@ export default function App({
   }, [error, mutate]);
 
   if (isLoading) {
-    return <h2>Is Loading...</h2>;
+    return <Splashscreen />;
   }
 
   return (
@@ -77,7 +78,7 @@ function Auth({ children }: AuthProps) {
   const { status } = useSession({ required: true });
 
   if (status === "loading") {
-    return <div>Is Loading...</div>;
+    return <Splashscreen />;
   }
   return children;
 }

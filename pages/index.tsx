@@ -1,12 +1,15 @@
 import Modal from "@/components/Modal";
 import Scanner from "@/components/Scanner";
 import { ModalAction } from "@/types/modal";
-import { Button, Typography } from "@mui/material";
+import { Box, Button, Stack, Typography } from "@mui/material";
 import { useState } from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
+import Splashscreen from "@/components/Splashscreen";
+import { Modal as MuiModal } from "@mui/material";
 
 export default function Home() {
   const [modalOpen, setModalOpen] = useState(false);
+  const [showSplashScreen, setShowSplashScreen] = useState(false);
 
   const actions: ModalAction[] = [
     {
@@ -27,6 +30,18 @@ export default function Home() {
 
   return (
     <>
+      <MuiModal
+        open={showSplashScreen}
+        onClose={() => setShowSplashScreen(false)}
+      >
+        <Box
+          onClick={() => setShowSplashScreen(false)}
+          sx={{ cursor: "pointer" }}
+        >
+          <Splashscreen />
+        </Box>
+      </MuiModal>
+
       {modalOpen && (
         <Modal
           open={modalOpen}
@@ -68,12 +83,18 @@ export default function Home() {
           </p>
         </Modal>
       )}
+
       <Typography variant="h5" component="h2" gutterBottom>
         Home
       </Typography>
-      <Button variant="contained" onClick={() => setModalOpen(true)}>
-        Open Modal
-      </Button>
+      <Stack spacing={2} direction="row">
+        <Button variant="contained" onClick={() => setModalOpen(true)}>
+          Open Modal
+        </Button>
+        <Button variant="contained" onClick={() => setShowSplashScreen(true)}>
+          Show Splashscreen
+        </Button>
+      </Stack>
     </>
   );
 }
