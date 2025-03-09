@@ -24,6 +24,7 @@ import {
 } from "@mui/x-data-grid";
 import ImageNotSupportedIcon from "@mui/icons-material/ImageNotSupported";
 import CloseIcon from "@mui/icons-material/Close";
+import Fuse from "fuse.js";
 
 export default function Products({ userData }: PageProps) {
   const allProducts = userData?.products.toSorted((a, b) => {
