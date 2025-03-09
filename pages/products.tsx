@@ -27,9 +27,7 @@ import ImageNotSupportedIcon from "@mui/icons-material/ImageNotSupported";
 import CloseIcon from "@mui/icons-material/Close";
 
 export default function Products({ userData }: PageProps) {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const allProducts = userData?.products.slice().sort((a, b) => {
+  const allProducts = userData?.products.toSorted((a, b) => {
     const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
     const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
     return dateB - dateA;
@@ -95,6 +93,7 @@ export default function Products({ userData }: PageProps) {
       field: "user_note",
       headerName: "User Note",
       flex: 1,
+      sortable: false,
     },
   ];
 
@@ -107,14 +106,6 @@ export default function Products({ userData }: PageProps) {
     user_note: product.user_note,
     product, // speichert zusätzlich das gesamte Produkt als Objekt
   }));
-
-  const columnVisibilityModel: GridColumnVisibilityModel = {
-    image: !isMobile,
-    brand: !isMobile,
-    user_note: !isMobile,
-    name: true,
-    user_rating: true,
-  };
 
   const handleRowClick = (params: GridRowParams) => {
     setSelectedProduct(params.row.product);
@@ -137,8 +128,7 @@ export default function Products({ userData }: PageProps) {
             columns={columns}
             rowHeight={80}
             onRowClick={handleRowClick}
-            disableRowSelectionOnClick
-            columnVisibilityModel={columnVisibilityModel}
+            disableColumnMenu // hides three-dots-menu in column header
           />
         </Box>
       </Paper>
