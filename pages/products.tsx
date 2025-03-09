@@ -8,8 +8,11 @@ import ProductCard from "@/components/ProductCard";
 import {
   Avatar,
   Box,
+  IconButton,
+  InputAdornment,
   Paper,
   Rating,
+  TextField,
   Tooltip,
   Typography,
   useMediaQuery,
@@ -24,15 +27,20 @@ import {
 } from "@mui/x-data-grid";
 import ImageNotSupportedIcon from "@mui/icons-material/ImageNotSupported";
 import CloseIcon from "@mui/icons-material/Close";
+import FilterAltIcon from "@mui/icons-material/FilterAlt";
+import FilterAltOffIcon from "@mui/icons-material/FilterAltOff";
+import ClearIcon from "@mui/icons-material/Clear";
 import Fuse from "fuse.js";
 
 export default function Products({ userData }: PageProps) {
-  const allProducts = userData?.products.toSorted((a, b) => {
+  const initialProducts = userData?.products.toSorted((a, b) => {
     const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
     const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
     return dateB - dateA;
   });
-  const [selectedProduct, setSelectedProduct] = useState(allProducts[0]);
+  const [displayedProducts, setDisplayedProducts] = useState(initialProducts);
+  const [selectedProduct, setSelectedProduct] = useState(initialProducts[0]);
+  const [filterTerm, setFilterTerm] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const modalActions: ModalAction[] = [
     {
@@ -103,7 +111,7 @@ export default function Products({ userData }: PageProps) {
     },
   ];
 
-  const rows: GridRowsProp = allProducts.map((product) => ({
+  const rows: GridRowsProp = displayedProducts.map((product) => ({
     id: product.ean,
     image: product.image,
     name: product.name,
@@ -122,21 +130,38 @@ export default function Products({ userData }: PageProps) {
     user_note: true,
   });
 
+  // re-run the effect when isMobile changes and update the visibility of the columns
   useEffect(() => {
     setColumnVisibilityModel((prev) => ({
       ...prev,
       brand: !isMobile,
       user_note: !isMobile,
     }));
-  }, [isMobile]); // re-run the effect when isMobile changes and update the visibility of the columns
+  }, [isMobile]);
+
+  // Filter products by search term
+  useEffect(() => {
+    if (!filterTerm) {
+      setDisplayedProducts(initialProducts);
+    } else {
+      const fuse = new Fuse(initialProducts, {
+        keys: ["name", "brand", "ean", "description", "user_note"],
+        threshold: 0.3, // Je niedriger der Wert, desto strenger die Suche
+      });
+
+      const results = fuse.search(filterTerm);
+
+      setDisplayedProducts(results.map((result) => result.item));
+    }
+  }, [filterTerm]);
 
   const handleRowClick = (params: GridRowParams) => {
     setSelectedProduct(params.row.product);
     setModalOpen(true);
   };
 
-  if (!allProducts || allProducts.length === 0) {
-    return <Typography>Keine Produkte vorhanden</Typography>;
+  if (!initialProducts || initialProducts.length === 0) {
+    return <Typography>No products</Typography>;
   }
 
   return (
