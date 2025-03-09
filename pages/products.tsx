@@ -166,11 +166,11 @@ export default function Products({ userData }: PageProps) {
 
   return (
     <>
-      <Typography variant="h5" component="h2">
+      <Typography variant="h5" component="h2" gutterBottom>
         My Products
       </Typography>
       <Paper>
-      <Box
+        <Box
           sx={{
             display: "flex",
             justifyContent: "end",
@@ -205,7 +205,12 @@ export default function Products({ userData }: PageProps) {
             }}
           />
         </Box>
-        <Box sx={{ height: "calc(100vh - 200px)", width: "100%" }}>
+        <Box
+          sx={{
+            height: "calc(100vh - 270px)",
+            width: "100%",
+          }}
+        >
           <DataGrid
             rows={rows}
             columns={columns}
