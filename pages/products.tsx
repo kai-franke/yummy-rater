@@ -170,6 +170,41 @@ export default function Products({ userData }: PageProps) {
         My Products
       </Typography>
       <Paper>
+      <Box
+          sx={{
+            display: "flex",
+            justifyContent: "end",
+            padding: 1,
+          }}
+        >
+          <TextField
+            sx={{ my: 1, minWidth: isMobile ? "100%" : 320 }}
+            label="Filter"
+            placeholder="e.g. Applepie or 4478738324"
+            variant="outlined"
+            size="small"
+            value={filterTerm}
+            onChange={(e) => setFilterTerm(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  {filterTerm ? (
+                    <FilterAltIcon fontSize="small" />
+                  ) : (
+                    <FilterAltOffIcon fontSize="small" color="disabled" />
+                  )}
+                </InputAdornment>
+              ),
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={() => setFilterTerm("")} size="small">
+                    {<ClearIcon fontSize="small" />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
+        </Box>
         <Box sx={{ height: "calc(100vh - 200px)", width: "100%" }}>
           <DataGrid
             rows={rows}
