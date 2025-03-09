@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { PageProps } from "@/types/pageProps";
 import { ModalAction } from "@/types/modal";
@@ -18,7 +18,6 @@ import {
 import {
   DataGrid,
   GridColDef,
-  GridColumnVisibilityModel,
   GridRenderCellParams,
   GridRowParams,
   GridRowsProp,
@@ -42,6 +41,10 @@ export default function Products({ userData }: PageProps) {
       startIcon: <CloseIcon />,
     },
   ];
+  const theme = useTheme(); // if no ThemeProvider is defined in the project, it uses the default theme
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  // isMobile is true if screen width < 600px (because standard breakpoint for "sm" is 600px,
+  // "breakpoints.down" generates a media query string meaning "max-width: 600px")
 
   const columns: GridColDef[] = [
     {
@@ -49,19 +52,16 @@ export default function Products({ userData }: PageProps) {
       headerName: "",
       width: 80,
       renderCell: (params: GridRenderCellParams) => (
-        console.log(params),
-        (
-          <Box sx={{ display: "flex", alignItems: "center", height: "100%" }}>
-            <Avatar
-              src={params.value}
-              alt={params.row.name}
-              variant="rounded"
-              sx={{ width: 60, height: 60 }}
-            >
-              <ImageNotSupportedIcon />
-            </Avatar>
-          </Box>
-        )
+        <Box sx={{ display: "flex", alignItems: "center", height: "100%" }}>
+          <Avatar
+            src={params.value}
+            alt={params.row.name}
+            variant="rounded"
+            sx={{ width: 60, height: 60 }}
+          >
+            <ImageNotSupportedIcon />
+          </Avatar>
+        </Box>
       ),
       sortable: false,
       filterable: false,
@@ -79,11 +79,16 @@ export default function Products({ userData }: PageProps) {
     {
       field: "user_rating",
       headerName: "User Rating",
-      width: 140,
+      width: isMobile ? 130 : 140,
       renderCell: (params: GridRenderCellParams) => (
         <Tooltip title={params.value} followCursor>
           <Box sx={{ display: "inline-block" }}>
-            <Rating precision={0.5} value={params.value} readOnly />
+            <Rating
+              precision={0.5}
+              value={params.value}
+              readOnly
+              size={isMobile ? "small" : "medium"}
+            />
           </Box>
         </Tooltip>
       ),
@@ -104,8 +109,25 @@ export default function Products({ userData }: PageProps) {
     brand: product.brand,
     user_rating: product.user_rating,
     user_note: product.user_note,
-    product, // speichert zusätzlich das gesamte Produkt als Objekt
+    product, // saves additionally the complete product object in order to access it in handleRowClick for the product card.
   }));
+
+  // define the visibility of the columns
+  const [columnVisibilityModel, setColumnVisibilityModel] = useState({
+    image: true,
+    name: true,
+    brand: true,
+    user_rating: true,
+    user_note: true,
+  });
+
+  useEffect(() => {
+    setColumnVisibilityModel((prev) => ({
+      ...prev,
+      brand: !isMobile,
+      user_note: !isMobile,
+    }));
+  }, [isMobile]); // re-run the effect when isMobile changes and update the visibility of the columns
 
   const handleRowClick = (params: GridRowParams) => {
     setSelectedProduct(params.row.product);
@@ -129,27 +151,27 @@ export default function Products({ userData }: PageProps) {
             rowHeight={80}
             onRowClick={handleRowClick}
             disableColumnMenu // hides three-dots-menu in column header
+            columnVisibilityModel={columnVisibilityModel}
           />
         </Box>
       </Paper>
-      {modalOpen && (
-        <Modal
-          title="Product Details"
-          open={modalOpen}
-          actions={modalActions}
-          onClose={() => setModalOpen(false)}
+      {/* Modal doesn't need an extra condition because it has its own "open" prop that controls its visibility*/}
+      <Modal
+        title="Product Details"
+        open={modalOpen}
+        actions={modalActions}
+        onClose={() => setModalOpen(false)}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
         >
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <ProductCard product={selectedProduct} />
-          </Box>
-        </Modal>
-      )}
+          <ProductCard product={selectedProduct} />
+        </Box>
+      </Modal>
     </>
   );
 }
