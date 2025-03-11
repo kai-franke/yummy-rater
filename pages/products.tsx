@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { PageProps } from "@/types/pageProps";
 import { ModalAction } from "@/types/modal";
@@ -33,13 +33,14 @@ import ClearIcon from "@mui/icons-material/Clear";
 import Fuse from "fuse.js";
 
 export default function Products({ userData }: PageProps) {
-  const initialProducts = userData?.products.toSorted((a, b) => {
-    const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-    const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-    return dateB - dateA;
-  });
-  const [displayedProducts, setDisplayedProducts] = useState(initialProducts);
-  const [selectedProduct, setSelectedProduct] = useState(initialProducts[0]);
+  const allProducts = useMemo(() => {
+    return userData?.products.toSorted((a, b) => {
+      const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return dateB - dateA;
+    });
+  }, [userData]);
+  const [selectedProduct, setSelectedProduct] = useState(allProducts[0]);
   const [filterTerm, setFilterTerm] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const modalActions: ModalAction[] = [
@@ -54,6 +55,28 @@ export default function Products({ userData }: PageProps) {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   // isMobile is true if screen width < 600px (because standard breakpoint for "sm" is 600px,
   // "breakpoints.down" generates a media query string meaning "max-width: 600px")
+
+  const columnVisibilityModel = {
+    image: true,
+    name: true,
+    brand: !isMobile,
+    user_rating: true,
+    user_note: !isMobile,
+  }
+
+  const fuse = useMemo(() => {
+    return new Fuse(allProducts, {
+      keys: ["name", "brand", "ean", "description", "user_note"],
+      threshold: 0.3, // Je niedriger der Wert, desto strenger die Suche
+    });
+  }, [allProducts]);
+  // useMemo is used here to prevent the creation of a new instance of Fuse on every render
+
+  const displayedProducts = useMemo(() => {
+    return filterTerm
+      ? fuse.search(filterTerm).map((result) => result.item)
+      : allProducts;
+  }, [filterTerm, allProducts, fuse]);
 
   const columns: GridColDef[] = [
     {
@@ -121,46 +144,12 @@ export default function Products({ userData }: PageProps) {
     product, // saves additionally the complete product object in order to access it in handleRowClick for the product card.
   }));
 
-  // define the visibility of the columns
-  const [columnVisibilityModel, setColumnVisibilityModel] = useState({
-    image: true,
-    name: true,
-    brand: true,
-    user_rating: true,
-    user_note: true,
-  });
-
-  // re-run the effect when isMobile changes and update the visibility of the columns
-  useEffect(() => {
-    setColumnVisibilityModel((prev) => ({
-      ...prev,
-      brand: !isMobile,
-      user_note: !isMobile,
-    }));
-  }, [isMobile]);
-
-  // Filter products by search term
-  useEffect(() => {
-    if (!filterTerm) {
-      setDisplayedProducts(initialProducts);
-    } else {
-      const fuse = new Fuse(initialProducts, {
-        keys: ["name", "brand", "ean", "description", "user_note"],
-        threshold: 0.3, // Je niedriger der Wert, desto strenger die Suche
-      });
-
-      const results = fuse.search(filterTerm);
-
-      setDisplayedProducts(results.map((result) => result.item));
-    }
-  }, [filterTerm]);
-
   const handleRowClick = (params: GridRowParams) => {
     setSelectedProduct(params.row.product);
     setModalOpen(true);
   };
 
-  if (!initialProducts || initialProducts.length === 0) {
+  if (!allProducts || allProducts.length === 0) {
     return <Typography>No products</Typography>;
   }
 
