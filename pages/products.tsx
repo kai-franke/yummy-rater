@@ -1,6 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import Fuse from "fuse.js";
 
 import { PageProps } from "@/types/pageProps";
+import { IProduct } from "@/types/product";
 import { ModalAction } from "@/types/modal";
 import Modal from "@/components/Modal";
 import ProductCard from "@/components/ProductCard";
@@ -30,7 +32,6 @@ import CloseIcon from "@mui/icons-material/Close";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import FilterAltOffIcon from "@mui/icons-material/FilterAltOff";
 import ClearIcon from "@mui/icons-material/Clear";
-import Fuse from "fuse.js";
 
 export default function Products({ userData }: PageProps) {
   const allProducts = useMemo(() => {
@@ -40,14 +41,14 @@ export default function Products({ userData }: PageProps) {
       return dateB - dateA;
     });
   }, [userData]);
-  const [selectedProduct, setSelectedProduct] = useState(allProducts[0]);
+  const [selectedProduct, setSelectedProduct] = useState<IProduct | null>(null);
   const [filterTerm, setFilterTerm] = useState("");
-  const [modalOpen, setModalOpen] = useState(false);
+  const modalOpen = !!selectedProduct; // converts selectedProduct to a boolean value
   const modalActions: ModalAction[] = [
     {
       label: "Close",
       variant: "contained",
-      onClick: () => setModalOpen(false),
+      onClick: () => setSelectedProduct(null),
       startIcon: <CloseIcon />,
     },
   ];
@@ -62,7 +63,7 @@ export default function Products({ userData }: PageProps) {
     brand: !isMobile,
     user_rating: true,
     user_note: !isMobile,
-  }
+  };
 
   const fuse = useMemo(() => {
     return new Fuse(allProducts, {
@@ -146,7 +147,6 @@ export default function Products({ userData }: PageProps) {
 
   const handleRowClick = (params: GridRowParams) => {
     setSelectedProduct(params.row.product);
-    setModalOpen(true);
   };
 
   if (!allProducts || allProducts.length === 0) {
@@ -201,6 +201,7 @@ export default function Products({ userData }: PageProps) {
           }}
         >
           <DataGrid
+            autoPageSize
             rows={rows}
             columns={columns}
             rowHeight={80}
@@ -215,7 +216,7 @@ export default function Products({ userData }: PageProps) {
         title="Product Details"
         open={modalOpen}
         actions={modalActions}
-        onClose={() => setModalOpen(false)}
+        onClose={() => setSelectedProduct(null)}
       >
         <Box
           sx={{
@@ -224,7 +225,7 @@ export default function Products({ userData }: PageProps) {
             alignItems: "center",
           }}
         >
-          <ProductCard product={selectedProduct} />
+          {modalOpen && <ProductCard product={selectedProduct} />}
         </Box>
       </Modal>
     </>
