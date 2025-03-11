@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
+import Fuse from "fuse.js";
 
 import { PageProps } from "@/types/pageProps";
+import { IProduct } from "@/types/product";
 import { ModalAction } from "@/types/modal";
 import Modal from "@/components/Modal";
 import ProductCard from "@/components/ProductCard";
@@ -8,8 +10,11 @@ import ProductCard from "@/components/ProductCard";
 import {
   Avatar,
   Box,
+  IconButton,
+  InputAdornment,
   Paper,
   Rating,
+  TextField,
   Tooltip,
   Typography,
   useMediaQuery,
@@ -24,20 +29,26 @@ import {
 } from "@mui/x-data-grid";
 import ImageNotSupportedIcon from "@mui/icons-material/ImageNotSupported";
 import CloseIcon from "@mui/icons-material/Close";
+import FilterAltIcon from "@mui/icons-material/FilterAlt";
+import FilterAltOffIcon from "@mui/icons-material/FilterAltOff";
+import ClearIcon from "@mui/icons-material/Clear";
 
 export default function Products({ userData }: PageProps) {
-  const allProducts = userData?.products.toSorted((a, b) => {
-    const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-    const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-    return dateB - dateA;
-  });
-  const [selectedProduct, setSelectedProduct] = useState(allProducts[0]);
-  const [modalOpen, setModalOpen] = useState(false);
+  const allProducts = useMemo(() => {
+    return userData?.products.toSorted((a, b) => {
+      const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return dateB - dateA;
+    });
+  }, [userData]);
+  const [selectedProduct, setSelectedProduct] = useState<IProduct | null>(null);
+  const [filterTerm, setFilterTerm] = useState("");
+  const modalOpen = !!selectedProduct; // converts selectedProduct to a boolean value
   const modalActions: ModalAction[] = [
     {
       label: "Close",
       variant: "contained",
-      onClick: () => setModalOpen(false),
+      onClick: () => setSelectedProduct(null),
       startIcon: <CloseIcon />,
     },
   ];
@@ -45,6 +56,28 @@ export default function Products({ userData }: PageProps) {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   // isMobile is true if screen width < 600px (because standard breakpoint for "sm" is 600px,
   // "breakpoints.down" generates a media query string meaning "max-width: 600px")
+
+  const columnVisibilityModel = {
+    image: true,
+    name: true,
+    brand: !isMobile,
+    user_rating: true,
+    user_note: !isMobile,
+  };
+
+  const fuse = useMemo(() => {
+    return new Fuse(allProducts, {
+      keys: ["name", "brand", "ean", "description", "user_note"],
+      threshold: 0.3, // Je niedriger der Wert, desto strenger die Suche
+    });
+  }, [allProducts]);
+  // useMemo is used here to prevent the creation of a new instance of Fuse on every render
+
+  const displayedProducts = useMemo(() => {
+    return filterTerm
+      ? fuse.search(filterTerm).map((result) => result.item)
+      : allProducts;
+  }, [filterTerm, allProducts, fuse]);
 
   const columns: GridColDef[] = [
     {
@@ -102,7 +135,7 @@ export default function Products({ userData }: PageProps) {
     },
   ];
 
-  const rows: GridRowsProp = allProducts.map((product) => ({
+  const rows: GridRowsProp = displayedProducts.map((product) => ({
     id: product.ean,
     image: product.image,
     name: product.name,
@@ -112,40 +145,63 @@ export default function Products({ userData }: PageProps) {
     product, // saves additionally the complete product object in order to access it in handleRowClick for the product card.
   }));
 
-  // define the visibility of the columns
-  const [columnVisibilityModel, setColumnVisibilityModel] = useState({
-    image: true,
-    name: true,
-    brand: true,
-    user_rating: true,
-    user_note: true,
-  });
-
-  useEffect(() => {
-    setColumnVisibilityModel((prev) => ({
-      ...prev,
-      brand: !isMobile,
-      user_note: !isMobile,
-    }));
-  }, [isMobile]); // re-run the effect when isMobile changes and update the visibility of the columns
-
   const handleRowClick = (params: GridRowParams) => {
     setSelectedProduct(params.row.product);
-    setModalOpen(true);
   };
 
   if (!allProducts || allProducts.length === 0) {
-    return <Typography>Keine Produkte vorhanden</Typography>;
+    return <Typography>No products</Typography>;
   }
 
   return (
     <>
-      <Typography variant="h5" component="h2">
+      <Typography variant="h5" component="h2" gutterBottom>
         My Products
       </Typography>
       <Paper>
-        <Box sx={{ height: "calc(100vh - 200px)", width: "100%" }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "end",
+            padding: 1,
+          }}
+        >
+          <TextField
+            sx={{ my: 1, minWidth: isMobile ? "100%" : 320 }}
+            label="Filter"
+            placeholder="e.g. Applepie or 4478738324"
+            variant="outlined"
+            size="small"
+            value={filterTerm}
+            onChange={(e) => setFilterTerm(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  {filterTerm ? (
+                    <FilterAltIcon fontSize="small" />
+                  ) : (
+                    <FilterAltOffIcon fontSize="small" color="disabled" />
+                  )}
+                </InputAdornment>
+              ),
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={() => setFilterTerm("")} size="small">
+                    {<ClearIcon fontSize="small" />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
+        </Box>
+        <Box
+          sx={{
+            height: "calc(100vh - 270px)",
+            width: "100%",
+          }}
+        >
           <DataGrid
+            autoPageSize
             rows={rows}
             columns={columns}
             rowHeight={80}
@@ -160,7 +216,7 @@ export default function Products({ userData }: PageProps) {
         title="Product Details"
         open={modalOpen}
         actions={modalActions}
-        onClose={() => setModalOpen(false)}
+        onClose={() => setSelectedProduct(null)}
       >
         <Box
           sx={{
@@ -169,7 +225,7 @@ export default function Products({ userData }: PageProps) {
             alignItems: "center",
           }}
         >
-          <ProductCard product={selectedProduct} />
+          {modalOpen && <ProductCard product={selectedProduct} />}
         </Box>
       </Modal>
     </>
