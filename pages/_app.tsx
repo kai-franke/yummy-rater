@@ -7,6 +7,8 @@ import { global } from "@/global-style";
 import { ReactNode } from "react";
 import Layout from "@/components/Layout";
 import Head from "next/head";
+import { ThemeProvider } from "@mui/material";
+import theme from "@/styles/theme";
 
 interface AuthProps {
   children: ReactNode;
@@ -51,7 +53,7 @@ export default function App({
   }
 
   return (
-    <>
+    <ThemeProvider theme={theme}>
       <Head>
         <title>Yummy Rater</title>
         <meta
@@ -69,7 +71,7 @@ export default function App({
           </Layout>
         </Auth>
       </SessionProvider>
-    </>
+    </ThemeProvider>
   );
 }
 
