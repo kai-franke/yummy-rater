@@ -140,7 +140,7 @@ export default function AddProduct() {
           margin="normal"
         />
         {image && <Image src={image} alt="bild" width={200} height={200} />}
-        <Typography gutterBottom>Benutzerbewertung</Typography>
+        <Typography component="legend" gutterBottom>Benutzerbewertung</Typography>
 
         <Rating
           defaultValue={0}

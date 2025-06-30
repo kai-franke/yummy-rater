@@ -13,6 +13,11 @@ const theme = createTheme({
             paper: "#ffffff",
         },
     },
+    components:{
+        MuiBottomNavigationAction:{
+            
+        }
+    },
 })
 
 export default theme;
