@@ -7,7 +7,7 @@ import { global } from "@/global-style";
 import { ReactNode } from "react";
 import Layout from "@/components/Layout";
 import Head from "next/head";
-import { ThemeProvider } from "@mui/material";
+import { ThemeProvider, CssBaseline } from "@mui/material";
 import theme from "@/styles/theme";
 
 interface AuthProps {
@@ -54,6 +54,7 @@ export default function App({
 
   return (
     <ThemeProvider theme={theme}>
+      <CssBaseline />
       <Head>
         <title>Yummy Rater</title>
         <meta
