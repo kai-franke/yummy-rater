@@ -6,6 +6,7 @@ import Image from "next/image";
 export default function ProductForm({
   onSubmit,
   isEditMode = false,
+  initialData = { ean: "" },
 }: ProductFormProps) {
   const [userRating, setUserRating] = useState(0);
   const [imageSource, setImageSource] = useState<string | undefined>("");
@@ -32,6 +33,7 @@ export default function ProductForm({
       </Typography>
       <form onSubmit={handleSubmit}>
         <TextField
+          defaultValue={initialData.ean || ""}
           name="ean"
           label="EAN"
           type="number"
