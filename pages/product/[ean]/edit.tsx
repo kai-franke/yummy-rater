@@ -7,7 +7,7 @@ export default function EditProductPage() {
   const { ean } = router.query;
 
   async function addProduct(data: IProduct) {
-    const response = await fetch("/api/user/add-product", {
+    const response = await fetch("/api/user/products", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

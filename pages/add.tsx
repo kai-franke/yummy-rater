@@ -33,7 +33,7 @@ export default function AddProduct() {
       user_note: userNote,
     };
 
-    await fetch("/api/user/add-product", {
+    await fetch("/api/user/products", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
