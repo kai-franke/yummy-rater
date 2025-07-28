@@ -5,6 +5,7 @@ import Scanner from "@/components/Scanner";
 import { getProductByEAN } from "@/services/productService";
 import Image from "next/image";
 import useSWR from "swr";
+import ProductForm from "@/components/ProductForm";
 
 export default function AddProduct() {
   const [ean, setEan] = useState<string | undefined>("");
@@ -17,6 +18,7 @@ export default function AddProduct() {
   const router = useRouter();
   const { mutate } = useSWR("/api/user");
   const [error, setError] = useState<string | null>(null);
+  console.log("userRating: ", userRating);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -63,8 +65,6 @@ export default function AddProduct() {
         console.error("Ein unbekannter Fehler ist aufgetreten", error);
       }
     }
-
-
   }
 
   function handleStartScanning() {
@@ -83,8 +83,12 @@ export default function AddProduct() {
   ) {
     setUserRating(Number(newValue));
   }
+  function addProduct(data: any) {
+    console.log("Adding a product.", data);
+  }
   return (
     <>
+      <ProductForm onSubmit={addProduct} />
       <Typography variant="h5" component="h2" gutterBottom>
         Add product
       </Typography>
