@@ -88,7 +88,7 @@ export default function AddProduct() {
   }
   return (
     <>
-      <ProductForm onSubmit={addProduct} />
+      {/* <ProductForm onSubmit={addProduct} /> */}
       <Typography variant="h5" component="h2" gutterBottom>
         Add product
       </Typography>

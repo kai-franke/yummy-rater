@@ -1,6 +1,7 @@
 import ProductForm from "@/components/ProductForm";
 import { IProduct } from "@/types/product";
 import { useRouter } from "next/router";
+import { mutate } from "swr";
 
 export default function AddProductPage() {
   const router = useRouter();
@@ -19,6 +20,8 @@ export default function AddProductPage() {
     }
     const result = await response.json();
     console.log("Product added successfully:", result);
+    mutate("/api/user"); // Revalidate the user data
+    router.push(`/products`); // Redirect to the products page after editing
   }
 
   return (

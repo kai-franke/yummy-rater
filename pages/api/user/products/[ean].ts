@@ -8,8 +8,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  console.log("Request body:", req.body);
-  if (req.method !== "POST") {
+  if (req.method !== "PUT") {
     return res
       .status(405)
       .json({ message: `Method ${req.method} not allowed` });
@@ -44,7 +43,6 @@ export default async function handler(
     user_rating: user_rating ? Number(user_rating) : undefined,
     user_note: user_note || undefined,
   };
-  console.log("productData: ", productData);
 
   // Finde den Benutzer
   const user = await User.findOne({ provider_id: providerId });
@@ -52,11 +50,11 @@ export default async function handler(
   if (!user) {
     return res.status(404).json({ message: "User not found" });
   }
-  if (!user.products.some((product) => product.ean === productData.ean)) {
-    user.products.unshift(productData);
-    await user.save();
-    res.status(200).json({ message: "Product added successfully", user });
-  } else {
-    res.status(400).json({ message: "Product already in DB", user });
-  }
+  // Aktualisiere das Produkt, falls es bereits existiert
+  user.products = user.products.map((product) =>
+    product.ean === productData.ean ? { ...productData } : product
+  );
+  await user.save();
+  res.status(200).json({ message: "Product added successfully", user });
+  return;
 }

@@ -2,14 +2,18 @@ import { ProductFormProps } from "@/types/productFormProps";
 import { useState } from "react";
 import { Button, TextField, Typography, Rating } from "@mui/material";
 import Image from "next/image";
+import { init } from "next/dist/compiled/webpack/webpack";
 
 export default function ProductForm({
   onSubmit,
   isEditMode = false,
   initialData = { ean: "" },
 }: ProductFormProps) {
-  const [userRating, setUserRating] = useState(0);
-  const [imageSource, setImageSource] = useState<string | undefined>("");
+  const [userRating, setUserRating] = useState(initialData.user_rating || 0);
+  const [imageSource, setImageSource] = useState<string | undefined>(
+    initialData.image || ""
+  );
+  console.log("initialData: ", initialData);
 
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -42,6 +46,7 @@ export default function ProductForm({
           margin="normal"
         />
         <TextField
+          defaultValue={initialData.name}
           name="name"
           label="Name"
           type="text"
@@ -51,6 +56,7 @@ export default function ProductForm({
         />
 
         <TextField
+          defaultValue={initialData.brand || ""}
           name="brand"
           label="Marke"
           type="text"
@@ -58,6 +64,7 @@ export default function ProductForm({
           margin="normal"
         />
         <TextField
+          defaultValue={initialData.description || ""}
           name="description"
           label="Beschreibung"
           multiline
@@ -66,13 +73,14 @@ export default function ProductForm({
           margin="normal"
         />
         <TextField
+          defaultValue={initialData.image || ""}
           name="image"
           label="Bild-URL"
           type="text"
           // value={image}
           // onChange={(e) => setImage(e.target.value)}
           fullWidth
-          disabled
+          inputProps={{ readOnly: true }}
           margin="normal"
         />
         {imageSource && (
@@ -82,12 +90,12 @@ export default function ProductForm({
 
         <Rating
           name="user_rating"
-          defaultValue={0}
           value={userRating}
           onChange={handleChangeRating}
         />
 
         <TextField
+          defaultValue={initialData.user_note || ""}
           name="user_note"
           label="Benutzeranmerkung"
           multiline
@@ -101,7 +109,7 @@ export default function ProductForm({
           color="primary"
           sx={{ mt: 2 }}
         >
-          {isEditMode ? "Edit Product" : "Add Product"}
+          {isEditMode ? "Update Product" : "Create Product"}
         </Button>
       </form>
     </>

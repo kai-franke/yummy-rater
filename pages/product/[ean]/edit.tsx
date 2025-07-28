@@ -1,13 +1,20 @@
 import ProductForm from "@/components/ProductForm";
 import { IProduct } from "@/types/product";
+import { IUser } from "@/types/user";
 import { useRouter } from "next/router";
+import { mutate } from "swr";
 
-export default function EditProductPage() {
+export default function EditProductPage({ userData }: { userData: IUser }) {
   const router = useRouter();
   const { ean } = router.query;
 
-  async function addProduct(data: IProduct) {
-    const response = await fetch("/api/user/products", {
+  const productToEdit = userData.products?.find(
+    (product: IProduct) => product.ean.toString() === ean
+  );
+  console.log("Product to edit:", productToEdit);
+  async function editProduct(data: IProduct) {
+
+    const response = await fetch(`/api/user/products/${ean}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -15,13 +22,19 @@ export default function EditProductPage() {
       body: JSON.stringify(data),
     });
     if (!response.ok) {
-      throw new Error("Failed to add product");
+      throw new Error("Failed to edit product");
     }
     const result = await response.json();
-    console.log("Product added successfully:", result);
+    console.log("Product edited successfully:", result);
+    mutate("/api/user"); // Revalidate the user data
+    router.push(`/products`); // Redirect to the products page after editing
   }
 
   return (
-    <ProductForm onSubmit={addProduct} initialData={{ ean: String(ean) }} />
+    <ProductForm
+      onSubmit={editProduct}
+      isEditMode
+      initialData={productToEdit}
+    />
   );
 }
