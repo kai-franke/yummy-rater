@@ -16,12 +16,14 @@ export default function AddProductPage() {
       body: JSON.stringify(data),
     });
     if (!response.ok) {
-      throw new Error("Failed to add product");
+      console.error("Failed to add product");
+      // todo: Error handling mit Toast Message
+    } else {
+      const result = await response.json();
+      console.log("Product added successfully:", result);
+      mutate("/api/user"); // Revalidate the user data
+      router.push(`/products`); // Redirect to the products page after editing
     }
-    const result = await response.json();
-    console.log("Product added successfully:", result);
-    mutate("/api/user"); // Revalidate the user data
-    router.push(`/products`); // Redirect to the products page after editing
   }
 
   return (

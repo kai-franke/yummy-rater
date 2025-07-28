@@ -44,6 +44,7 @@ export default function ProductForm({
           required
           fullWidth
           margin="normal"
+          inputProps={{ readOnly: true }}
         />
         <TextField
           defaultValue={initialData.name}

@@ -32,6 +32,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import FilterAltOffIcon from "@mui/icons-material/FilterAltOff";
 import ClearIcon from "@mui/icons-material/Clear";
+import EditIcon from '@mui/icons-material/Edit';
 import { useRouter } from "next/router";
 
 export default function Products({ userData }: PageProps) {
@@ -55,7 +56,7 @@ export default function Products({ userData }: PageProps) {
         if (selectedProduct)
           router.push(`/product/${selectedProduct.ean}/edit`);
       },
-      startIcon: <CloseIcon />,
+      startIcon: <EditIcon />,
     },
     {
       label: "Close",

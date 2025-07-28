@@ -11,9 +11,7 @@ export default function EditProductPage({ userData }: { userData: IUser }) {
   const productToEdit = userData.products?.find(
     (product: IProduct) => product.ean.toString() === ean
   );
-  console.log("Product to edit:", productToEdit);
   async function editProduct(data: IProduct) {
-
     const response = await fetch(`/api/user/products/${ean}`, {
       method: "PUT",
       headers: {
@@ -22,12 +20,13 @@ export default function EditProductPage({ userData }: { userData: IUser }) {
       body: JSON.stringify(data),
     });
     if (!response.ok) {
-      throw new Error("Failed to edit product");
+      console.error("Failed to edit product");
+    } else {
+      const result = await response.json();
+      console.log("Product edited successfully:", result);
+      mutate("/api/user"); // Revalidate the user data
+      router.push(`/products`); // Redirect to the products page after editing
     }
-    const result = await response.json();
-    console.log("Product edited successfully:", result);
-    mutate("/api/user"); // Revalidate the user data
-    router.push(`/products`); // Redirect to the products page after editing
   }
 
   return (

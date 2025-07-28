@@ -8,7 +8,6 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  console.log("Request body:", req.body);
   if (req.method !== "POST") {
     return res
       .status(405)
@@ -44,7 +43,6 @@ export default async function handler(
     user_rating: user_rating ? Number(user_rating) : undefined,
     user_note: user_note || undefined,
   };
-  console.log("productData: ", productData);
 
   // Finde den Benutzer
   const user = await User.findOne({ provider_id: providerId });

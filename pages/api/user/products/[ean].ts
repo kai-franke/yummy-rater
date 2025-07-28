@@ -13,7 +13,6 @@ export default async function handler(
       .status(405)
       .json({ message: `Method ${req.method} not allowed` });
   }
-
   const token = await getToken({ req });
   const providerId = token?.sub;
 
