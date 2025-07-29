@@ -2,7 +2,6 @@ import { ProductFormProps } from "@/types/productFormProps";
 import { useState } from "react";
 import { Button, TextField, Typography, Rating } from "@mui/material";
 import Image from "next/image";
-import { init } from "next/dist/compiled/webpack/webpack";
 
 export default function ProductForm({
   onSubmit,
@@ -13,14 +12,11 @@ export default function ProductForm({
   const [imageSource, setImageSource] = useState<string | undefined>(
     initialData.image || ""
   );
-  console.log("initialData: ", initialData);
 
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    console.log(userRating);
     const formData = new FormData(event.target as HTMLFormElement);
     const data = Object.fromEntries(formData.entries());
-    // data.user_rating = String(userRating);
     onSubmit(data);
   }
 

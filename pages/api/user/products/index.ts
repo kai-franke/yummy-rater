@@ -50,11 +50,15 @@ export default async function handler(
   if (!user) {
     return res.status(404).json({ message: "User not found" });
   }
-  if (!user.products.some((product) => product.ean === productData.ean)) {
-    user.products.unshift(productData);
-    await user.save();
-    res.status(200).json({ message: "Product added successfully", user });
-  } else {
-    res.status(400).json({ message: "Product already in DB", user });
+  const productExists = user.products.some(
+    (product) => product.ean === productData.ean
+  );
+  if (productExists) {
+    return res
+      .status(400)
+      .json({ message: `Product with ean ${productData.ean} already exists` });
   }
+  user.products.push(productData);
+  const result = await user.save();
+  res.status(200).json({ message: "Product added successfully", result });
 }
