@@ -42,18 +42,23 @@ export default async function handler(
     user_rating: user_rating ? Number(user_rating) : undefined,
     user_note: user_note || undefined,
   };
-
-  // Finde den Benutzer
-  const user = await User.findOne({ provider_id: providerId });
-
-  if (!user) {
-    return res.status(404).json({ message: "User not found" });
-  }
-  // Aktualisiere das Produkt, falls es bereits existiert
-  user.products = user.products.map((product) =>
-    product.ean === productData.ean ? { ...productData } : product
+  // Finde den Benutzer und aktualisiere das Produkt
+  const result = await User.updateOne(
+    {
+      provider_id: providerId,
+      "products.ean": productData.ean,
+    },
+    {
+      $set: {
+        "products.$.name": productData.name,
+        "products.$.brand": productData.brand,
+        "products.$.description": productData.description,
+        "products.$.image": productData.image,
+        "products.$.user_rating": productData.user_rating,
+        "products.$.user_note": productData.user_note,
+      },
+    }
   );
-  await user.save();
-  res.status(200).json({ message: "Product added successfully", user });
+  res.status(200).json({ message: "Product updated successfully", result });
   return;
 }
