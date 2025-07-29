@@ -1,6 +1,12 @@
 import { ProductFormProps } from "@/types/productFormProps";
 import { useState } from "react";
-import { Button, TextField, Typography, Rating } from "@mui/material";
+import {
+  Button,
+  TextField,
+  Typography,
+  Rating,
+  ButtonGroup,
+} from "@mui/material";
 import Image from "next/image";
 
 export default function ProductForm({
@@ -100,6 +106,16 @@ export default function ProductForm({
           fullWidth
           margin="normal"
         />
+
+        <Button
+          type="button"
+          variant="contained"
+          color="primary"
+          href="/products"
+          sx={{ mt: 2, mr: 2 }}
+        >
+          Cancel
+        </Button>
         <Button
           type="submit"
           variant="contained"
