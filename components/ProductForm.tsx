@@ -96,7 +96,7 @@ export default function ProductForm({
           value={userRating}
           onChange={handleChangeRating}
         />
-
+        <input type="hidden" name="user_rating" value={userRating} />
         <TextField
           defaultValue={initialData.user_note || ""}
           name="user_note"
