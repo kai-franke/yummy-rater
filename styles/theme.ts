@@ -19,10 +19,8 @@ import { createTheme } from "@mui/material/styles";
 //     MuiBottomNavigationAction: {
 //       styleOverrides: {
 //         root: {
-//           "&.Mui-selected": {
-//             "& .MuiSvgIcon-root": {
-//               color: theme.palette.secondary.main,
-//             },
+//           "&.Mui-selected .MuiSvgIcon-root": {
+//             color: theme.palette.secondary.main,
 //           },
 //         },
 //       },

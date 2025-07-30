@@ -1,4 +1,4 @@
-import { AppBar, Typography, Toolbar, Box } from "@mui/material";
+import { AppBar, Toolbar, Box } from "@mui/material";
 import Login from "./Login";
 
 function Header() {
