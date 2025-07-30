@@ -35,13 +35,14 @@ export default async function handler(
   // Erstelle 'productData' als 'IProduct'
   const productData: IProduct = {
     ean: Number(ean),
-    name: name || undefined,
-    brand: brand || undefined,
-    description: description || undefined,
-    image: image || undefined,
-    user_rating: user_rating ? Number(user_rating) : undefined,
-    user_note: user_note || undefined,
+    name: name ?? undefined,
+    brand: brand ?? undefined,
+    description: description ?? undefined,
+    image: image ?? undefined,
+    user_rating: Number(user_rating) ?? undefined,
+    user_note: user_note ?? undefined,
   };
+
   // Finde den Benutzer und aktualisiere das Produkt
   const result = await User.updateOne(
     {

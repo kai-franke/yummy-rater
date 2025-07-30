@@ -17,7 +17,7 @@ export default function AddProductPage() {
     });
     if (!response.ok) {
       console.error("Failed to add product");
-      // todo: Error handling mit Toast Message
+      // todo: Error handling with Toast Message
     } else {
       const result = await response.json();
       console.log("Product added successfully:", result);
@@ -27,6 +27,9 @@ export default function AddProductPage() {
   }
 
   return (
-    <ProductForm onSubmit={addProduct} initialData={{ ean: String(ean) }} />
+    <ProductForm
+      onSubmit={addProduct}
+      initialData={{ ean: String(ean), user_rating: 0 }}
+    />
   );
 }

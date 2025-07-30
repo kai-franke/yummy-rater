@@ -5,14 +5,13 @@ import {
   TextField,
   Typography,
   Rating,
-  ButtonGroup,
 } from "@mui/material";
 import Image from "next/image";
 
 export default function ProductForm({
   onSubmit,
   isEditMode = false,
-  initialData = { ean: "" },
+  initialData = { ean: "", user_rating: 0 },
 }: ProductFormProps) {
   const [userRating, setUserRating] = useState(initialData.user_rating || 0);
   const [imageSource, setImageSource] = useState<string | undefined>(
