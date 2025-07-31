@@ -7,6 +7,9 @@ import {
   Typography,
   Rating,
   Tooltip,
+  FormControl,
+  InputLabel,
+  OutlinedInput,
 } from "@mui/material";
 import Image from "next/image";
 import CancelIcon from "@mui/icons-material/Cancel";
@@ -14,7 +17,7 @@ import CancelIcon from "@mui/icons-material/Cancel";
 export default function ProductForm({
   onSubmit,
   isEditMode = false,
-  initialData = { ean: "", user_rating: 0 },
+  initialData = { ean: "" },
 }: ProductFormProps) {
   const [userRating, setUserRating] = useState(initialData.user_rating || 0);
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -27,7 +30,7 @@ export default function ProductForm({
     const formData = new FormData(event.target as HTMLFormElement);
     const data = Object.fromEntries(formData.entries());
     if (imageFile) {
-      const response = await fetch("/api/user/upload", {
+      const response = await fetch("/api/images/upload", {
         method: "POST",
         body: formData,
       });
@@ -73,7 +76,7 @@ export default function ProductForm({
       <Typography variant="h5" component="h2" gutterBottom>
         {isEditMode ? "Edit Product" : "Add Product"}
       </Typography>
-      <form onSubmit={handleSubmit}>
+      <Box component="form" onSubmit={handleSubmit}>
         <Typography variant="subtitle1" gutterBottom>
           EAN: {initialData.ean}
         </Typography>
@@ -81,7 +84,7 @@ export default function ProductForm({
         <TextField
           defaultValue={initialData.name}
           name="name"
-          label="Name"
+          label="Product"
           type="text"
           fullWidth
           margin="normal"
@@ -90,7 +93,7 @@ export default function ProductForm({
         <TextField
           defaultValue={initialData.brand || ""}
           name="brand"
-          label="Marke"
+          label="Brand"
           type="text"
           fullWidth
           margin="normal"
@@ -98,7 +101,7 @@ export default function ProductForm({
         <TextField
           defaultValue={initialData.description || ""}
           name="description"
-          label="Beschreibung"
+          label="Description"
           multiline
           rows={4}
           fullWidth
@@ -169,49 +172,37 @@ export default function ProductForm({
               onChange={handleChangeFile}
             />
           </Button>
-          <Button variant="outlined" onClick={handleResetImage}>
-            Reset
-          </Button>
+          {imageSource !== initialData.image && (
+            <Button variant="outlined" onClick={handleResetImage}>
+              Reset
+            </Button>
+          )}
         </Box>
-        <Box
-          component="fieldset"
-          sx={{
-            // Kopiert das Styling von TextField
-            border: "1px solid",
-            borderColor: "rgba(0, 0, 0, 0.23)",
-            borderRadius: 1, 
-            padding: "16.5px 14px",
-            margin: 0,
-            marginTop: 2,
-            minWidth: 0,
-            display: "flex",
-            gap: 2,
-            flexWrap: "wrap",
-            alignItems: "start",
-            typography: "body1",
-            "&:hover": {
-              borderColor: "black",
-            },
-          }}
-        >
-          <Box
-            component="legend"
-            sx={{ px: 0.5, fontSize: "0.75rem", color: "text.secondary" }}
-          >
-            Benutzerbewertung
-          </Box>
-
-          <Rating
-            name="user_rating"
-            value={userRating}
-            onChange={handleChangeRating}
+        <FormControl variant="outlined" fullWidth sx={{ mt: 3 }}>
+          <InputLabel shrink htmlFor="rating-fieldset">
+            Rating
+          </InputLabel>
+          <OutlinedInput
+            id="rating-fieldset"
+            notched
+            label="Rating"
+            readOnly
+            startAdornment={
+              <>
+                <Rating
+                  name="user_rating"
+                  value={userRating}
+                  onChange={handleChangeRating}
+                />
+                <input type="hidden" name="user_rating" value={userRating} />
+              </>
+            }
           />
-          <input type="hidden" name="user_rating" value={userRating} />
-        </Box>
+        </FormControl>
         <TextField
           defaultValue={initialData.user_note || ""}
           name="user_note"
-          label="Benutzeranmerkung"
+          label="Note"
           multiline
           rows={4}
           fullWidth
@@ -220,7 +211,7 @@ export default function ProductForm({
 
         <Button
           type="button"
-          variant="contained"
+          variant="outlined"
           color="primary"
           href="/products"
           sx={{ mt: 2, mr: 2 }}
@@ -235,7 +226,7 @@ export default function ProductForm({
         >
           {isEditMode ? "Update Product" : "Create Product"}
         </Button>
-      </form>
+      </Box>
     </>
   );
 }

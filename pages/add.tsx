@@ -18,7 +18,6 @@ export default function AddProduct() {
   const router = useRouter();
   const { mutate } = useSWR("/api/user");
   const [error, setError] = useState<string | null>(null);
-  console.log("userRating: ", userRating);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -88,7 +87,6 @@ export default function AddProduct() {
   }
   return (
     <>
-      {/* <ProductForm onSubmit={addProduct} /> */}
       <Typography variant="h5" component="h2" gutterBottom>
         Add product
       </Typography>

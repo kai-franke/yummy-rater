@@ -29,7 +29,7 @@ export default function AddProductPage() {
   return (
     <ProductForm
       onSubmit={addProduct}
-      initialData={{ ean: String(ean), user_rating: 0 }}
+      initialData={{ ean: String(ean) }}
     />
   );
 }
