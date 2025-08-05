@@ -32,6 +32,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import FilterAltOffIcon from "@mui/icons-material/FilterAltOff";
 import ClearIcon from "@mui/icons-material/Clear";
+import EditIcon from '@mui/icons-material/Edit';
+import { useRouter } from "next/router";
 
 export default function Products({ userData }: PageProps) {
   const allProducts = useMemo(() => {
@@ -43,8 +45,19 @@ export default function Products({ userData }: PageProps) {
   }, [userData]);
   const [selectedProduct, setSelectedProduct] = useState<IProduct | null>(null);
   const [filterTerm, setFilterTerm] = useState("");
+  const router = useRouter();
+
   const modalOpen = !!selectedProduct; // converts selectedProduct to a boolean value
   const modalActions: ModalAction[] = [
+    {
+      label: "Edit",
+      variant: "contained",
+      onClick: () => {
+        if (selectedProduct)
+          router.push(`/product/${selectedProduct.ean}/edit`);
+      },
+      startIcon: <EditIcon />,
+    },
     {
       label: "Close",
       variant: "contained",

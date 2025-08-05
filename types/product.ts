@@ -8,7 +8,7 @@ export interface IProduct {
   image?: string;
   user_rating?: number;
   user_note?: string;
-  createdAt?: Date;
+  createdAt?: Date; 
 }
 
 export interface IProductNoMongoose {

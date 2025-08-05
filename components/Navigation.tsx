@@ -4,9 +4,8 @@ import {
   Paper,
 } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
-import FavoriteIcon from "@mui/icons-material/Favorite";
+import StarIcon from '@mui/icons-material/Star';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import AddIcon from "@mui/icons-material/Add";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -35,22 +34,8 @@ export default function Navigation() {
         <BottomNavigationAction
           href="/products"
           value="/products"
-          label="My Products"
-          icon={<ShoppingCartIcon />}
-          component={Link}
-        />
-        <BottomNavigationAction
-          href="/favorites"
-          value="/favorites"
-          label="Favorites"
-          icon={<FavoriteIcon />}
-          component={Link}
-        />
-        <BottomNavigationAction
-          href="/add"
-          value="/add"
-          label="Add"
-          icon={<AddIcon />}
+          label="Yummies"
+          icon={<StarIcon />}
           component={Link}
         />
         <BottomNavigationAction
