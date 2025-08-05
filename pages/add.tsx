@@ -5,6 +5,7 @@ import Scanner from "@/components/Scanner";
 import { getProductByEAN } from "@/services/productService";
 import Image from "next/image";
 import useSWR from "swr";
+import ProductForm from "@/components/ProductForm";
 
 export default function AddProduct() {
   const [ean, setEan] = useState<string | undefined>("");
@@ -31,7 +32,7 @@ export default function AddProduct() {
       user_note: userNote,
     };
 
-    await fetch("/api/user/add-product", {
+    await fetch("/api/user/products", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -63,8 +64,6 @@ export default function AddProduct() {
         console.error("Ein unbekannter Fehler ist aufgetreten", error);
       }
     }
-
-
   }
 
   function handleStartScanning() {
@@ -82,6 +81,9 @@ export default function AddProduct() {
     newValue: number | null
   ) {
     setUserRating(Number(newValue));
+  }
+  function addProduct(data: any) {
+    console.log("Adding a product.", data);
   }
   return (
     <>
