@@ -17,12 +17,12 @@ import CancelIcon from "@mui/icons-material/Cancel";
 export default function ProductForm({
   onSubmit,
   isEditMode = false,
-  initialData = { ean: "" },
+  initialData = { ean: "",},
 }: ProductFormProps) {
   const [userRating, setUserRating] = useState(initialData.user_rating || 0);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imageSource, setImageSource] = useState<string | undefined>(
-    initialData.image || ""
+    initialData.image || undefined
   );
 
   async function handleSubmit(event: React.FormEvent) {
@@ -68,8 +68,11 @@ export default function ProductForm({
 
   function handleDeleteImage() {
     setImageFile(null);
-    setImageSource("");
+    setImageSource(undefined);
   }
+
+  console.log('imageSource', imageSource)
+  console.log('initialData.image', initialData.image)
 
   return (
     <>
@@ -162,7 +165,7 @@ export default function ProductForm({
               />
             </Box>
           )}
-          <Button variant="contained" component="label">
+          <Button variant="outlined" component="label">
             {imageSource ? "Change" : "Choose File"}
             <input
               name="image"
@@ -172,6 +175,7 @@ export default function ProductForm({
               onChange={handleChangeFile}
             />
           </Button>
+        
           {imageSource !== initialData.image && (
             <Button variant="outlined" onClick={handleResetImage}>
               Reset
