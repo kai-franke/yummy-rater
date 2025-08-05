@@ -71,16 +71,13 @@ export default function ProductForm({
     setImageSource(undefined);
   }
 
-  console.log('imageSource', imageSource)
-  console.log('initialData.image', initialData.image)
-
   return (
     <>
       <Typography variant="h5" component="h2" gutterBottom>
         {isEditMode ? "Edit Product" : "Add Product"}
       </Typography>
       <Box component="form" onSubmit={handleSubmit}>
-        <Typography variant="subtitle1" gutterBottom>
+        <Typography variant="subtitle1" component="h3" gutterBottom>
           EAN: {initialData.ean}
         </Typography>
         <input type="text" name="ean" hidden value={initialData.ean} readOnly />
