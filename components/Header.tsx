@@ -1,13 +1,20 @@
-import { AppBar, Typography, Toolbar } from "@mui/material";
+import { AppBar, Toolbar, Box } from "@mui/material";
 import Login from "./Login";
 
 function Header() {
   return (
-    <AppBar position="sticky">
+    <AppBar position="sticky" elevation={0}>
       <Toolbar>
-        <Typography variant="h5" component="h1" sx={{ flexGrow: 1 }}>
-          Yummy Rater
-        </Typography>
+        <Box
+          component="img"
+          sx={{
+            height: 23,
+          }}
+          alt="Yummy Rater"
+          src="./yummy_rater_logo.svg"
+        />
+        {/* Box with flexGrow works like a spacer */}
+        <Box sx={{ flexGrow: 1 }} />
         <Login />
       </Toolbar>
     </AppBar>
