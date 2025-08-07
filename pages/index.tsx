@@ -7,6 +7,7 @@ import {
   CardActions,
 } from "@mui/material";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import Scanner from "@/components/Scanner";
 
 export default function Home() {
   return (
@@ -47,6 +48,28 @@ export default function Home() {
               <ArrowDownwardIcon />
             </IconButton>
           </CardActions>
+        </Card>
+        <Card
+          sx={{
+            borderRadius: 4,
+            p: 2,
+            backgroundColor: "secondary.main",
+          }}
+        >
+          <CardContent>
+            <Typography variant="h5" component="h2" gutterBottom>
+              Scan a product
+            </Typography>
+            <Typography variant="body2" sx={{ mb: 2 }}>
+              {`Scan a barcode or enter an article number to find it in your rated products or add it to your collection.`}
+            </Typography>
+            <Scanner
+              onScan={(ean) => {
+                console.log("Scanned EAN:", ean);
+              }}
+            />
+          </CardContent>
+          <CardActions sx={{ justifyContent: "center" }}></CardActions>
         </Card>
       </Stack>
     </>
