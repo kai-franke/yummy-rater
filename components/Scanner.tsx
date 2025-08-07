@@ -14,11 +14,15 @@ const ScannerContainer = styled(Box)`
   background-color: var(--scanner-background);
 `;
 
-const FocusMark = styled(Box)<{ rotation: number }>`
+const FocusMark = styled(Box)<{ rotation: number; active: boolean }>`
   position: absolute;
   width: 6%;
   height: 15%;
-  border: min(15px, calc(5px + 1.5vw)) solid var(--scanner-focus-marks);
+  border: min(15px, calc(5px + 1.5vw)) solid
+    ${({ active }) =>
+      active
+        ? "var(--scanner-focus-marks)"
+        : "var(--scanner-focus-marks-inactive)"};
   border-right: none;
   border-bottom: none;
   transform: rotate(${(props) => props.rotation}deg);
@@ -114,10 +118,26 @@ export default function Scanner({ onScan, onStartScanning }: ScannerProps) {
       <Global styles={videoElementCss} />
 
       <ScannerContainer>
-        <FocusMark rotation={0} style={{ top: "15%", left: "6%" }} />
-        <FocusMark rotation={90} style={{ top: "15%", right: "6%" }} />
-        <FocusMark rotation={270} style={{ bottom: "15%", left: "6%" }} />
-        <FocusMark rotation={180} style={{ bottom: "15%", right: "6%" }} />
+        <FocusMark
+          active={isScanning}
+          rotation={0}
+          style={{ top: "15%", left: "6%" }}
+        />
+        <FocusMark
+          active={isScanning}
+          rotation={90}
+          style={{ top: "15%", right: "6%" }}
+        />
+        <FocusMark
+          active={isScanning}
+          rotation={270}
+          style={{ bottom: "15%", left: "6%" }}
+        />
+        <FocusMark
+          active={isScanning}
+          rotation={180}
+          style={{ bottom: "15%", right: "6%" }}
+        />
         {hasError && (
           <CameraErrorMessage severity="error">
             Please allow access to the camera.

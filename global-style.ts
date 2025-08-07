@@ -8,8 +8,9 @@ const roboto = Roboto({
 
 export const global = css`
   :root {
-    --scanner-background: #e0e0e0;
+    --scanner-background: #F4F2F1;
     --scanner-focus-marks: #ffffff85;
+    --scanner-focus-marks-inactive: #7B7773;
   }
 
   body {
