@@ -1,9 +1,19 @@
 import { useEffect, useState, useRef } from "react";
 import Quagga from "@ericblade/quagga2";
-import { Box, Button, Alert } from "@mui/material";
+import {
+  Box,
+  Button,
+  Alert,
+  Stack,
+  TextField,
+  InputAdornment,
+  IconButton,
+} from "@mui/material";
 import { ScannerProps } from "@/types/scanner";
 import styled from "@emotion/styled";
 import { Global, css } from "@emotion/react";
+import ClearIcon from "@mui/icons-material/Clear";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
 const ScannerContainer = styled(Box)`
   position: relative;
@@ -56,6 +66,8 @@ const CameraErrorMessage = styled(Alert)`
 
 export default function Scanner({ onScan, onStartScanning }: ScannerProps) {
   const [isScanning, setIsScanning] = useState(false);
+  const [showEANInput, setShowEANInput] = useState(false);
+  const [manualEANValue, setManualEANValue] = useState("");
   const [hasError, setHasError] = useState(false);
   const videoRef = useRef();
 
@@ -113,6 +125,16 @@ export default function Scanner({ onScan, onStartScanning }: ScannerProps) {
     }
   }
 
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const trimmedValue = manualEANValue.trim();
+    if (trimmedValue) {
+      onScan(trimmedValue);
+      setManualEANValue("");
+      setShowEANInput(false);
+    }
+  }
+
   return (
     <Box display="flex" flexDirection="column" alignItems="center">
       <Global styles={videoElementCss} />
@@ -147,13 +169,76 @@ export default function Scanner({ onScan, onStartScanning }: ScannerProps) {
       </ScannerContainer>
 
       <Button
-        variant="contained"
+        variant={isScanning || showEANInput ? "outlined" : "contained"}
         color="primary"
         onClick={toggleScanning}
-        sx={{ mt: 2 }}
+        sx={{ mt: 2, width: "100%", maxWidth: "640px" }}
       >
-        {isScanning ? "Stop" : "Scan"}
+        {isScanning ? "Stop scanning" : "Start scanning"}
       </Button>
+      {!showEANInput ? (
+        <Button
+          variant="outlined"
+          color="primary"
+          onClick={() => {
+            setShowEANInput(true);
+          }}
+          sx={{ mt: 2, width: "100%", maxWidth: "640px" }}
+        >
+          Enter article number
+        </Button>
+      ) : (
+        <Box component="form" onSubmit={handleSubmit}>
+          <Stack direction="row" spacing={1.25} alignItems="flex-start" mt={2}>
+            <TextField
+              fullWidth
+              label="Article Number"
+              value={manualEANValue}
+              onChange={(e) => setManualEANValue(e.target.value)}
+              placeholder="e.g., 43879528"
+              helperText="Enter a EAN or UPC Number"
+              variant="outlined"
+              size="small"
+              inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      size="small"
+                      aria-label="Clear"
+                      onClick={() => {
+                        setManualEANValue(""), setShowEANInput(false);
+                      }}
+                      edge="end"
+                    >
+                      <ClearIcon />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+
+            {/* <IconButton
+              aria-label="Submit article number"
+              onClick={(e) => handleSubmit(e)}
+              type="submit"
+              disabled={!manualEANValue.trim()}
+              color="primary"
+            >
+              <ArrowForwardIcon />
+            </IconButton> */}
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={(e) => handleSubmit(e)}
+              type="submit"
+              size="large"
+              disabled={!manualEANValue.trim()}
+              startIcon={<ArrowForwardIcon />}
+            ></Button>
+          </Stack>
+        </Box>
+      )}
     </Box>
   );
 }
