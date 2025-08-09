@@ -5,14 +5,17 @@ import {
   Typography,
   IconButton,
   CardActions,
+  Button,
 } from "@mui/material";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import StarOutlineIcon from '@mui/icons-material/StarOutline';
 import Scanner from "@/components/Scanner";
+
 
 export default function Home() {
   return (
     <>
-      <Stack spacing={2}>
+      <Stack spacing={5}>
         <Card
           sx={{
             borderRadius: 4,
@@ -70,6 +73,31 @@ export default function Home() {
             />
           </CardContent>
           <CardActions sx={{ justifyContent: "center" }}></CardActions>
+        </Card>
+        <Card
+          sx={{
+            borderRadius: 4,
+            p: 2,
+            backgroundColor: "#EFEBE9",
+            }}
+        >
+          <CardContent>
+            <StarOutlineIcon fontSize="large"/>
+            <Typography variant="h6" component="h3" gutterBottom>
+              My Yummies
+            </Typography>
+            <Typography variant="body2">
+              {`View and manage the foods you've rated and want to remember.`}
+            </Typography>
+          </CardContent>
+          <CardActions sx={{ justifyContent: "center" }}>
+            <Button
+              href="/products"
+              variant="outlined"
+              color="primary"
+              sx={{ width: "100%", maxWidth: "640px" }}
+            >Go to your rated products</Button>
+          </CardActions>
         </Card>
       </Stack>
     </>
