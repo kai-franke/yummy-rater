@@ -19,6 +19,8 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
+  Snackbar,
+  SnackbarContent,
 } from "@mui/material";
 import {
   DataGrid,
@@ -47,6 +49,8 @@ export default function Products({ userData }: PageProps) {
   const [selectedProduct, setSelectedProduct] = useState<IProduct | null>(null);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [filterTerm, setFilterTerm] = useState("");
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
   const router = useRouter();
 
   const modalOpen = !!selectedProduct; // converts selectedProduct to a boolean value
@@ -260,7 +264,11 @@ export default function Products({ userData }: PageProps) {
           {
             label: "Cancel",
             variant: "outlined",
-            onClick: () => setShowConfirmDelete(false),
+            onClick: () => {
+              setShowConfirmDelete(false);
+              setSnackbarMessage(`Process canceled.`);
+              setSnackbarOpen(true);
+            },
           },
           {
             label: "Delete",
@@ -274,6 +282,10 @@ export default function Products({ userData }: PageProps) {
                 setSelectedProduct(null);
                 setShowConfirmDelete(false);
                 mutate("/api/user"); // Revalidate the products list
+                setSnackbarMessage(
+                  `Product ${selectedProduct.name} deleted successfully`
+                );
+                setSnackbarOpen(true);
               }
             },
           },
@@ -297,6 +309,26 @@ export default function Products({ userData }: PageProps) {
           </Box>
         </Typography>
       </Modal>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={() => setSnackbarOpen(false)}
+      >
+        <SnackbarContent
+          sx={{ backgroundColor: theme.palette.secondary.main, color: "black" }}
+          message={snackbarMessage}
+          action={
+            <IconButton
+              size="small"
+              aria-label="close"
+              color="inherit"
+              onClick={() => setSnackbarOpen(false)}
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          }
+        />
+      </Snackbar>
     </>
   );
 }
