@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import Fuse from "fuse.js";
-
+import { mutate } from "swr";
 import { PageProps } from "@/types/pageProps";
 import { IProduct } from "@/types/product";
 import { ModalAction } from "@/types/modal";
@@ -32,7 +32,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import FilterAltOffIcon from "@mui/icons-material/FilterAltOff";
 import ClearIcon from "@mui/icons-material/Clear";
-import EditIcon from '@mui/icons-material/Edit';
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { useRouter } from "next/router";
 
 export default function Products({ userData }: PageProps) {
@@ -44,14 +45,23 @@ export default function Products({ userData }: PageProps) {
     });
   }, [userData]);
   const [selectedProduct, setSelectedProduct] = useState<IProduct | null>(null);
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [filterTerm, setFilterTerm] = useState("");
   const router = useRouter();
 
   const modalOpen = !!selectedProduct; // converts selectedProduct to a boolean value
   const modalActions: ModalAction[] = [
     {
+      label: "Delete",
+      variant: "outlined",
+      onClick: () => {
+        setShowConfirmDelete(true);
+      },
+      startIcon: <DeleteIcon />,
+    },
+    {
       label: "Edit",
-      variant: "contained",
+      variant: "outlined",
       onClick: () => {
         if (selectedProduct)
           router.push(`/product/${selectedProduct.ean}/edit`);
@@ -240,6 +250,52 @@ export default function Products({ userData }: PageProps) {
         >
           {modalOpen && <ProductCard product={selectedProduct} />}
         </Box>
+      </Modal>
+
+      <Modal
+        open={showConfirmDelete}
+        onClose={() => setShowConfirmDelete(false)}
+        title="Confirm Deletion"
+        actions={[
+          {
+            label: "Cancel",
+            variant: "outlined",
+            onClick: () => setShowConfirmDelete(false),
+          },
+          {
+            label: "Delete",
+            variant: "contained",
+            color: "error",
+            onClick: async () => {
+              if (selectedProduct) {
+                await fetch(`/api/user/products/${selectedProduct.ean}`, {
+                  method: "DELETE",
+                });
+                setSelectedProduct(null);
+                setShowConfirmDelete(false);
+                mutate("/api/user"); // Revalidate the products list
+              }
+            },
+          },
+        ]}
+      >
+        <Typography>
+          Do you really want to delete the product{" "}
+          <Box
+            component="span"
+            sx={{ fontWeight: "bold", color: "primary.main" }}
+          >
+            {selectedProduct?.name}
+          </Box>{" "}
+          permanently?
+          <Box
+            component="span"
+            sx={{ fontWeight: "bold", color: "error.main" }}
+          >
+            {" "}
+            This action cannot be undone.
+          </Box>
+        </Typography>
       </Modal>
     </>
   );

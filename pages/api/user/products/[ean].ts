@@ -8,7 +8,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  if (req.method !== "PUT") {
+  if (req.method !== "PUT" && req.method !== "DELETE") {
     return res
       .status(405)
       .json({ message: `Method ${req.method} not allowed` });
@@ -22,6 +22,28 @@ export default async function handler(
 
   await dbConnect();
 
+  // delete product:
+  if (req.method === "DELETE") {
+    const { ean } = req.query;
+
+    if (!ean || isNaN(Number(ean))) {
+      return res
+        .status(400)
+        .json({ message: "'ean' is required and must be a number" });
+    }
+
+    const result = await User.updateOne(
+      { provider_id: providerId },
+      { $pull: { products: { ean: Number(ean) } } }
+    );
+
+    if (result.modifiedCount === 0) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    return res.status(200).json({ message: "Product deleted successfully" });
+  }
+  // update product:
   const { ean, name, brand, description, image, user_rating, user_note } =
     req.body;
 
