@@ -23,7 +23,7 @@ export default function Modal({
     >
       {title && <DialogTitle>{title}</DialogTitle>}
       <DialogContent>{children}</DialogContent>
-      <DialogActions>
+      <DialogActions sx={{ justifyContent: "center" }}>
         {actions.map((action, index) => (
           <Button
             key={index}
