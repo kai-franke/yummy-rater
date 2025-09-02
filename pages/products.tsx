@@ -276,15 +276,20 @@ export default function Products({ userData }: PageProps) {
             color: "error",
             onClick: async () => {
               if (selectedProduct) {
-                await fetch(`/api/user/products/${selectedProduct.ean}`, {
-                  method: "DELETE",
-                });
+                const response = await fetch(
+                  `/api/user/products/${selectedProduct.ean}`,
+                  {
+                    method: "DELETE",
+                  }
+                );
+                setSnackbarMessage(
+                  response.ok
+                    ? `Product ${selectedProduct.name} deleted successfully`
+                    : `Error deleting product ${selectedProduct.name}: ${response.statusText}`
+                );
+                mutate("/api/user"); // Revalidate the products list
                 setSelectedProduct(null);
                 setShowConfirmDelete(false);
-                mutate("/api/user"); // Revalidate the products list
-                setSnackbarMessage(
-                  `Product ${selectedProduct.name} deleted successfully`
-                );
                 setSnackbarOpen(true);
               }
             },

@@ -32,17 +32,23 @@ export default async function handler(
         .json({ message: "'ean' is required and must be a number" });
     }
 
-    const result = await User.updateOne(
+    const user = await User.findOne({ provider_id: providerId });
+    const index = user?.products.findIndex(
+      (product) => product.ean === Number(ean)
+    );
+
+    if (index === -1) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    await User.updateOne(
       { provider_id: providerId },
       { $pull: { products: { ean: Number(ean) } } }
     );
 
-    if (result.modifiedCount === 0) {
-      return res.status(404).json({ message: "Product not found" });
-    }
-
     return res.status(200).json({ message: "Product deleted successfully" });
   }
+
   // update product:
   const { ean, name, brand, description, image, user_rating, user_note } =
     req.body;
