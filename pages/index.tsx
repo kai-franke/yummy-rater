@@ -8,11 +8,26 @@ import {
   Button,
 } from "@mui/material";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
-import StarOutlineIcon from '@mui/icons-material/StarOutline';
+import StarOutlineIcon from "@mui/icons-material/StarOutline";
 import Scanner from "@/components/Scanner";
-
+import { useState } from "react";
+import { set } from "mongoose";
 
 export default function Home() {
+  const [isScanning, setIsScanning] = useState(false);
+  const [scannedEAN, setScannedEAN] = useState<string | null>(null);
+
+  function toggleScanning() {
+    const newIsScanning = !isScanning;
+    setIsScanning(newIsScanning);
+  }
+
+  function handleScanResult(scannedData: string) {
+    toggleScanning();
+    setScannedEAN(scannedData);
+    console.log("Scanned EAN:", scannedData);
+  }
+
   return (
     <>
       <Stack spacing={5}>
@@ -66,11 +81,15 @@ export default function Home() {
             <Typography variant="body2" sx={{ mb: 2 }}>
               {`Scan a barcode or enter an article number to find it in your rated products or add it to your collection.`}
             </Typography>
-            <Scanner
-              onScan={(ean) => {
-                console.log("Scanned EAN:", ean);
-              }}
-            />
+            <Scanner onScan={handleScanResult} isScanning={isScanning} />
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={toggleScanning}
+              sx={{ mt: 2, width: "100%", maxWidth: "640px" }}
+            >
+              {isScanning ? "Stop Scanning" : "Start Scanning"}
+            </Button>
           </CardContent>
           <CardActions sx={{ justifyContent: "center" }}></CardActions>
         </Card>
@@ -79,10 +98,10 @@ export default function Home() {
             borderRadius: 4,
             p: 2,
             backgroundColor: "#EFEBE9",
-            }}
+          }}
         >
           <CardContent>
-            <StarOutlineIcon fontSize="large"/>
+            <StarOutlineIcon fontSize="large" />
             <Typography variant="h6" component="h3" gutterBottom>
               My Yummies
             </Typography>
@@ -96,7 +115,9 @@ export default function Home() {
               variant="outlined"
               color="primary"
               sx={{ width: "100%", maxWidth: "640px" }}
-            >Go to your rated products</Button>
+            >
+              Go to your rated products
+            </Button>
           </CardActions>
         </Card>
       </Stack>

@@ -64,8 +64,7 @@ const CameraErrorMessage = styled(Alert)`
   transform: translate(-50%, -50%);
 `;
 
-export default function Scanner({ onScan, onStartScanning }: ScannerProps) {
-  const [isScanning, setIsScanning] = useState(false);
+export default function Scanner({ onScan, onStartScanning, isScanning }: ScannerProps) {
   const [showEANInput, setShowEANInput] = useState(false);
   const [manualEANValue, setManualEANValue] = useState("");
   const [hasError, setHasError] = useState(false);
@@ -92,7 +91,7 @@ export default function Scanner({ onScan, onStartScanning }: ScannerProps) {
             if (err.name === "NotAllowedError") {
               setHasError(true);
             }
-            setIsScanning(false);
+            //setIsScanning(false); <= toggleScanning in parent component
             console.error("Error initializing Quagga: ", err);
             return;
           }
@@ -104,7 +103,6 @@ export default function Scanner({ onScan, onStartScanning }: ScannerProps) {
         const code = result.codeResult.code;
         if (code) {
           onScan(code);
-          toggleScanning();
         } else {
           console.warn("Scanned code is null");
         }
@@ -117,23 +115,15 @@ export default function Scanner({ onScan, onStartScanning }: ScannerProps) {
     }
   }, [isScanning, onScan]);
 
-  function toggleScanning() {
-    const newIsScanning = !isScanning;
-    setIsScanning(newIsScanning);
-    if (newIsScanning && onStartScanning) {
-      onStartScanning();
-    }
-  }
-
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    const trimmedValue = manualEANValue.trim();
-    if (trimmedValue) {
-      onScan(trimmedValue);
-      setManualEANValue("");
-      setShowEANInput(false);
-    }
-  }
+  // function handleSubmit(e: React.FormEvent) {
+  //   e.preventDefault();
+  //   const trimmedValue = manualEANValue.trim();
+  //   if (trimmedValue) {
+  //     onScan(trimmedValue);
+  //     setManualEANValue("");
+  //     setShowEANInput(false);
+  //   }
+  // }
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center">
@@ -168,15 +158,7 @@ export default function Scanner({ onScan, onStartScanning }: ScannerProps) {
         {isScanning && <VideoBox ref={videoRef} id="video" />}
       </ScannerContainer>
 
-      <Button
-        variant={isScanning || showEANInput ? "outlined" : "contained"}
-        color="primary"
-        onClick={toggleScanning}
-        sx={{ mt: 2, width: "100%", maxWidth: "640px" }}
-      >
-        {isScanning ? "Stop scanning" : "Start scanning"}
-      </Button>
-      {!showEANInput ? (
+      {/*!showEANInput ? (
         <Button
           variant="outlined"
           color="primary"
@@ -218,7 +200,7 @@ export default function Scanner({ onScan, onStartScanning }: ScannerProps) {
               }}
             />
 
-            {/* <IconButton
+            <IconButton
               aria-label="Submit article number"
               onClick={(e) => handleSubmit(e)}
               type="submit"
@@ -226,8 +208,7 @@ export default function Scanner({ onScan, onStartScanning }: ScannerProps) {
               color="primary"
             >
               <ArrowForwardIcon />
-            </IconButton> */}
-            <Button
+            </IconButton> 
               variant="contained"
               color="primary"
               onClick={(e) => handleSubmit(e)}
@@ -235,10 +216,10 @@ export default function Scanner({ onScan, onStartScanning }: ScannerProps) {
               size="large"
               disabled={!manualEANValue.trim()}
               startIcon={<ArrowForwardIcon />}
-            ></Button>
+            ></Button> 
           </Stack>
         </Box>
-      )}
+      )*/}
     </Box>
   );
 }

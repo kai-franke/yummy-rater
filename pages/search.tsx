@@ -38,7 +38,7 @@ export default function Scan() {
       <Typography variant="h5" component="h2">
         Search
       </Typography>
-      <Scanner onScan={handleScan} onStartScanning={handleStartScanning} />
+      {/* <Scanner onScan={handleScan} onStartScanning={handleStartScanning} /> */}
       <Typography variant="body1" mt={2}>
         Scanned Data: {ean}
       </Typography>

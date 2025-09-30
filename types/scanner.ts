@@ -7,4 +7,6 @@ export interface ScannerProps {
    * Optional callback function that is called when the scan process is started (for example, to reset the previously scanned data)
    */
   onStartScanning?: () => void;
+
+  isScanning: boolean;
 }
