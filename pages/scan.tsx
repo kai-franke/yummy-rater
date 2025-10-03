@@ -14,7 +14,7 @@ export default function Scan() {
       <Typography variant="h5" component="h2">
         Scan
       </Typography>
-      <Scanner onScan={handleScan} />
+      <Scanner onScan={handleScan} isScanning />
       <Typography variant="body1" mt={2}>
         Scanned Data: {data}
       </Typography>
