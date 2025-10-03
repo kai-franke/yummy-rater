@@ -11,26 +11,25 @@ import {
   InputAdornment,
 } from "@mui/material";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
-import ClearIcon from '@mui/icons-material/Clear';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import ClearIcon from "@mui/icons-material/Clear";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import StarOutlineIcon from "@mui/icons-material/StarOutline";
 import Scanner from "@/components/Scanner";
 import { useState } from "react";
 
-export default function Home() {
-  const [isScanning, setIsScanning] = useState(false);
-  const [isManualEntry, setIsManualEntry] = useState(false);
-  const [scannedEAN, setScannedEAN] = useState<string | null>(null);
+type Mode = "idle" | "scanning" | "manual";
 
-  function toggleScanning() {
-    const newIsScanning = !isScanning;
-    setIsScanning(newIsScanning);
-  }
+export default function Home() {
+  const [mode, setMode] = useState<Mode>("idle");
+  const [currentEAN, setCurrentEAN] = useState<string | undefined>(undefined);
+
+  const isScanning = mode === "scanning"; // creates a boolean based on the mode useState
+  const isManual = mode === "manual";
 
   function handleScanResult(scannedData: string) {
-    toggleScanning();
-    setScannedEAN(scannedData);
-    console.log("Scanned EAN:", scannedEAN); // Logic to handle the scanned EAN code goes here (check in database, add to list, etc.)
+    setCurrentEAN(scannedData);
+    setMode("idle"); // stop scanning after a successful scan
+    console.log("Scanned EAN:", scannedData); // Logic to handle the scanned EAN code goes here (check in database, add to list, etc.)
   }
 
   return (
@@ -64,7 +63,11 @@ export default function Home() {
                   fontSize: 35, // Icon-Größe
                 },
               }}
-              href=""
+              onClick={() =>
+                document
+                  .getElementById("scan-section")
+                  ?.scrollIntoView({ behavior: "smooth" })
+              }
               color="primary"
               aria-label="jump to scan"
             >
@@ -73,6 +76,7 @@ export default function Home() {
           </CardActions>
         </Card>
         <Card
+          id="scan-section"
           sx={{
             borderRadius: 4,
             p: 2,
@@ -89,68 +93,79 @@ export default function Home() {
             <Scanner onScan={handleScanResult} isScanning={isScanning} />
             <CardActions disableSpacing sx={{ flexDirection: "column", p: 0 }}>
               <Button
-                disabled={isManualEntry}
+                disabled={isManual}
                 variant="contained"
                 color="primary"
-                onClick={toggleScanning}
+                onClick={() =>
+                setMode(isScanning ? "idle" : "scanning")
+              }
                 sx={{ mt: 2, width: "100%", maxWidth: "640px", mr: 0 }}
               >
                 {isScanning ? "Stop Scanning" : "Start Scanning"}
               </Button>
-        {!isManualEntry ? (
-          <Button
-            variant="outlined"
-            color="primary"
-            disabled={isScanning}
-            onClick={() => setIsManualEntry(true)}
-            sx={{ mt: 1, width: "100%", maxWidth: "640px" }}
-          >
-            Enter article number
-          </Button>
-        ) : (
-          <Box component="form">
-            <Stack direction="row" spacing={1.25} alignItems="flex-start" mt={2}>
-              <TextField
-                fullWidth
-                label="Article Number"
-                //value={manualEANValue}
-                //onChange={(e) => setManualEANValue(e.target.value)}
-                placeholder="e.g., 43879528"
-                helperText="Enter a EAN or UPC Number"
-                variant="outlined"
-                size="small"
-                inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        size="small"
-                        aria-label="Clear"
-                        onClick={() => {
-                          console.log("Clear input")
-                        }}
-                        edge="end"
-                      >
-                        <ClearIcon />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-              <IconButton
-              
-                aria-label="Submit article number"
-                //onClick={(e) => handleSubmit(e)}
-                type="submit"
-                //disabled={!manualEANValue.trim()}
-                color="primary"
-              >
-                <ArrowForwardIcon />
-              </IconButton>
-             
-            </Stack>
-          </Box>
-        )}
+              {!isManual ? (
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  disabled={isScanning}
+                  onClick={() => setMode("manual")}
+                  sx={{ mt: 1, width: "100%", maxWidth: "640px" }}
+                >
+                  Enter article number
+                </Button>
+              ) : (
+                <Box component="form" sx={{ width: "100%", maxWidth: "640px" }}>
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    alignItems="flex-start"
+                    mt={1.5}
+                  >
+                    <TextField
+                      autoFocus
+                      sx={{ width: "100%" }}
+                      label="Article Number"
+                      //value={manualEANValue}
+                      //onChange={(e) => setManualEANValue(e.target.value)}
+                      placeholder="e.g., 43879528"
+                      helperText="Enter a EAN or UPC Number"
+                      variant="outlined"
+                      size="small"
+                      inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              size="small"
+                              aria-label="Clear"
+                              onClick={() => {
+                                setMode("idle");
+                              }}
+                              edge="end"
+                            >
+                              <ClearIcon
+                                sx={{
+                                  fontSize:
+                                    "1.25rem" /* Reduce IconButton size */,
+                                }}
+                              />
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                    <IconButton
+                      aria-label="Submit article number"
+                      //onClick={(e) => handleSubmit(e)}
+                      type="submit"
+                      //disabled={!manualEANValue.trim()}
+                      color="primary"
+                    >
+                      <ArrowForwardIcon />
+                    </IconButton>
+                  </Stack>
+                </Box>
+              )}
             </CardActions>
           </CardContent>
           <CardActions sx={{ justifyContent: "center" }}></CardActions>
