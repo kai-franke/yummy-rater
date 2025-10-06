@@ -17,7 +17,7 @@ import CancelIcon from "@mui/icons-material/Cancel";
 export default function ProductForm({
   onSubmit,
   isEditMode = false,
-  initialData = { ean: "",},
+  initialData = { ean: "" },
 }: ProductFormProps) {
   const [userRating, setUserRating] = useState(initialData.user_rating || 0);
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -172,7 +172,7 @@ export default function ProductForm({
               onChange={handleChangeFile}
             />
           </Button>
-        
+
           {imageSource !== initialData.image && (
             <Button variant="outlined" onClick={handleResetImage}>
               Reset
