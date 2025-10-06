@@ -15,21 +15,45 @@ import ClearIcon from "@mui/icons-material/Clear";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import StarOutlineIcon from "@mui/icons-material/StarOutline";
 import Scanner from "@/components/Scanner";
-import { useState } from "react";
+import { use, useState } from "react";
+import { PageProps } from "@/types/pageProps";
+import { useRouter } from "next/router";
 
 type Mode = "idle" | "scanning" | "manual";
 
-export default function Home() {
+export default function Home({ userData }: PageProps) {
   const [mode, setMode] = useState<Mode>("idle");
-  const [currentEAN, setCurrentEAN] = useState<string | undefined>(undefined);
+  const [currentEAN, setCurrentEAN] = useState<string | undefined>(undefined); // Muss kein useState sein?
+  const router = useRouter();
 
   const isScanning = mode === "scanning"; // creates a boolean based on the mode useState
   const isManual = mode === "manual";
 
-  function handleScanResult(scannedData: string) {
-    setCurrentEAN(scannedData);
+  function handleResult(ean: string) {
+    setCurrentEAN(ean);
     setMode("idle"); // stop scanning after a successful scan
-    console.log("Scanned EAN:", scannedData); // Logic to handle the scanned EAN code goes here (check in database, add to list, etc.)
+    checkEAN(ean);
+  }
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const formData = new FormData(e.target as HTMLFormElement);
+    const data = Object.fromEntries(formData);
+    handleResult(data.ean as string);
+  }
+
+  function checkEAN(ean: string) {
+    // 1. Prüfen, ob der EAN-Code in der User Datenbank vorhanden ist - wenn ja, dann Produkt anzeigen, wenn nein,
+    const existingProduct = userData?.products.find(
+      (product) => product.ean === Number(ean)
+    );
+    if (existingProduct) {
+      // Modal mit ProductCard und Produktdaten und ModalActions anzeigen
+    } else {
+      router.push(`/product/${ean}/add`);
+      // Modal mit Dialog "Product Not Found in Your Yummies" anzeigen und bei
+      // Bestätigung zu /product/[ean]/add weiterleiten
+    }
   }
 
   return (
@@ -90,15 +114,13 @@ export default function Home() {
             <Typography variant="body2" sx={{ mb: 2 }}>
               {`Scan a barcode or enter an article number to find it in your rated products or add it to your collection.`}
             </Typography>
-            <Scanner onScan={handleScanResult} isScanning={isScanning} />
+            <Scanner onScan={handleResult} isScanning={isScanning} />
             <CardActions disableSpacing sx={{ flexDirection: "column", p: 0 }}>
               <Button
                 disabled={isManual}
                 variant="contained"
                 color="primary"
-                onClick={() =>
-                setMode(isScanning ? "idle" : "scanning")
-              }
+                onClick={() => setMode(isScanning ? "idle" : "scanning")}
                 sx={{ mt: 2, width: "100%", maxWidth: "640px", mr: 0 }}
               >
                 {isScanning ? "Stop Scanning" : "Start Scanning"}
@@ -114,7 +136,11 @@ export default function Home() {
                   Enter article number
                 </Button>
               ) : (
-                <Box component="form" sx={{ width: "100%", maxWidth: "640px" }}>
+                <Box
+                  component="form"
+                  sx={{ width: "100%", maxWidth: "640px" }}
+                  onSubmit={handleSubmit}
+                >
                   <Stack
                     direction="row"
                     spacing={1}
@@ -123,6 +149,7 @@ export default function Home() {
                   >
                     <TextField
                       autoFocus
+                      name="ean"
                       sx={{ width: "100%" }}
                       label="Article Number"
                       //value={manualEANValue}
