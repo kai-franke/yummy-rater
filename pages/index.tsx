@@ -16,6 +16,7 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import StarOutlineIcon from "@mui/icons-material/StarOutline";
 import EditIcon from "@mui/icons-material/Edit";
 import CloseIcon from "@mui/icons-material/Close";
+import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDissatisfied';
 import Scanner from "@/components/Scanner";
 import { ModalProps } from "@/types/modal";
 import { useState } from "react";
@@ -99,9 +100,42 @@ export default function Home({ userData }: PageProps) {
         ],
       });
     } else {
-      router.push(`/product/${ean}/add`);
       // Modal mit Dialog "Product Not Found in Your Yummies" anzeigen und bei
       // Bestätigung zu /product/[ean]/add weiterleiten
+      setModal({
+        open: true,
+        onClose: () => setModal((prev) => ({ ...prev, open: false })),
+        title: "Product Not Found in Your Yummies",
+        children: (
+          <>
+          <SentimentVeryDissatisfiedIcon fontSize="large" />
+            <Typography>
+              This product isn’t in your Yummies yet. Want to add it?
+            </Typography>
+            <Typography variant="body2" sx={{ color: "grey.500", mt: 1 }}>
+              EAN: {ean}
+            </Typography>
+          </>
+        ),
+        actions: [
+          {
+            label: "Cancel",
+            onClick: () => {
+              setModal((prev) => ({ ...prev, open: false }));
+            },
+            variant: "outlined",
+          },
+          {
+            label: "Add Product",
+            onClick: () => {
+              setModal((prev) => ({ ...prev, open: false }));
+              router.push(`/product/${ean}/add`);
+            },
+            variant: "contained",
+            color: "primary",
+          },
+        ],
+      });
     }
   }
 
