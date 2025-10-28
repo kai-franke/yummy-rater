@@ -14,18 +14,30 @@ import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import ClearIcon from "@mui/icons-material/Clear";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import StarOutlineIcon from "@mui/icons-material/StarOutline";
+import EditIcon from "@mui/icons-material/Edit";
+import CloseIcon from "@mui/icons-material/Close";
 import Scanner from "@/components/Scanner";
-import { use, useState } from "react";
+import { ModalProps } from "@/types/modal";
+import { useState } from "react";
 import { PageProps } from "@/types/pageProps";
 import { useRouter } from "next/router";
+import ProductCard from "@/components/ProductCard";
+import Modal from "@/components/Modal";
+import { set } from "mongoose";
 
 type Mode = "idle" | "scanning" | "manual";
 
 export default function Home({ userData }: PageProps) {
   const [mode, setMode] = useState<Mode>("idle");
   const [currentEAN, setCurrentEAN] = useState<string | undefined>(undefined); // Muss kein useState sein?
+  const [modal, setModal] = useState<ModalProps>({
+    open: false,
+    onClose: () => {},
+    title: "",
+    children: <></>,
+    actions: [],
+  });
   const router = useRouter();
-
   const isScanning = mode === "scanning"; // creates a boolean based on the mode useState
   const isManual = mode === "manual";
 
@@ -43,12 +55,49 @@ export default function Home({ userData }: PageProps) {
   }
 
   function checkEAN(ean: string) {
-    // 1. Prüfen, ob der EAN-Code in der User Datenbank vorhanden ist - wenn ja, dann Produkt anzeigen, wenn nein,
+    // Prüfen, ob der EAN-Code in der User Datenbank vorhanden ist - wenn ja, dann Produkt anzeigen, wenn nein,
     const existingProduct = userData?.products.find(
       (product) => product.ean === Number(ean)
     );
     if (existingProduct) {
       // Modal mit ProductCard und Produktdaten und ModalActions anzeigen
+      setModal({
+        open: true,
+        onClose: () => setModal((prev) => ({ ...prev, open: false })),
+        title: "Product Details",
+        children: (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <ProductCard product={existingProduct} />
+          </Box>
+        ),
+        actions: [
+          {
+            label: "Edit",
+            onClick: () => {
+              setModal((prev) => ({ ...prev, open: false }));
+              router.push(`/product/${existingProduct.ean}/edit`);
+            },
+            variant: "outlined",
+            startIcon: <EditIcon />,
+          },
+          {
+            label: "Close",
+            onClick: () => {
+              setModal((prev) => ({ ...prev, open: false }));
+            },
+            variant: "contained",
+            color: "primary",
+            startIcon: <CloseIcon />,
+          },
+          // Delete Button should be here as well
+        ],
+      });
     } else {
       router.push(`/product/${ean}/add`);
       // Modal mit Dialog "Product Not Found in Your Yummies" anzeigen und bei
@@ -225,6 +274,14 @@ export default function Home({ userData }: PageProps) {
           </CardActions>
         </Card>
       </Stack>
+      <Modal
+        open={modal.open}
+        onClose={() => setModal((prev) => ({ ...prev, open: false }))}
+        title={modal.title ?? undefined}
+        actions={modal.actions}
+      >
+        {modal.children}
+      </Modal>
     </>
   );
 }
