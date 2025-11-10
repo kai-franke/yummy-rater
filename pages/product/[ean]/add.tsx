@@ -4,20 +4,23 @@ import { IProduct } from "@/types/product";
 import { useRouter } from "next/router";
 import { mutate } from "swr";
 import { useEffect, useState } from "react";
-import { get } from "http";
 
 export default function AddProductPage() {
   const router = useRouter();
   const { ean } = router.query;
-
   const [product, setProduct] = useState<IProduct | null>(null);
 
   useEffect(() => {
     async function fetchProduct() {
-      const productData = await getProductByEAN(String(ean));
-      setProduct(productData);
+      try {
+        const productData = await getProductByEAN(String(ean));
+        setProduct(productData);
+      } catch (error) {
+        setProduct({ ean: Number(ean) });
+        console.error("Error fetching product data:", error);
+      }
     }
-    fetchProduct(); // try notwendig? JA!!!
+    fetchProduct();
   }, [ean]);
 
   async function addProduct(data: IProduct) {
