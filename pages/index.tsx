@@ -16,7 +16,7 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import StarOutlineIcon from "@mui/icons-material/StarOutline";
 import EditIcon from "@mui/icons-material/Edit";
 import CloseIcon from "@mui/icons-material/Close";
-import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDissatisfied';
+import SentimentVeryDissatisfiedIcon from "@mui/icons-material/SentimentVeryDissatisfied";
 import Scanner from "@/components/Scanner";
 import { ModalProps } from "@/types/modal";
 import { useState } from "react";
@@ -24,13 +24,11 @@ import { PageProps } from "@/types/pageProps";
 import { useRouter } from "next/router";
 import ProductCard from "@/components/ProductCard";
 import Modal from "@/components/Modal";
-import { set } from "mongoose";
 
 type Mode = "idle" | "scanning" | "manual";
 
 export default function Home({ userData }: PageProps) {
   const [mode, setMode] = useState<Mode>("idle");
-  const [currentEAN, setCurrentEAN] = useState<string | undefined>(undefined); // Muss kein useState sein?
   const [modal, setModal] = useState<ModalProps>({
     open: false,
     onClose: () => {},
@@ -43,25 +41,22 @@ export default function Home({ userData }: PageProps) {
   const isManual = mode === "manual";
 
   function handleResult(ean: string) {
-    setCurrentEAN(ean);
     setMode("idle"); // stop scanning after a successful scan
     checkEAN(ean);
   }
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
+  function handleSubmit(event: React.FormEvent) {
+    event.preventDefault();
+    const formData = new FormData(event.target as HTMLFormElement);
     const data = Object.fromEntries(formData);
     handleResult(data.ean as string);
   }
 
   function checkEAN(ean: string) {
-    // Prüfen, ob der EAN-Code in der User Datenbank vorhanden ist - wenn ja, dann Produkt anzeigen, wenn nein,
     const existingProduct = userData?.products.find(
       (product) => product.ean === Number(ean)
     );
     if (existingProduct) {
-      // Modal mit ProductCard und Produktdaten und ModalActions anzeigen
       setModal({
         open: true,
         onClose: () => setModal((prev) => ({ ...prev, open: false })),
@@ -100,15 +95,14 @@ export default function Home({ userData }: PageProps) {
         ],
       });
     } else {
-      // Modal mit Dialog "Product Not Found in Your Yummies" anzeigen und bei
-      // Bestätigung zu /product/[ean]/add weiterleiten
+      // Check if product data is available at API happens in /product/[ean]/add
       setModal({
         open: true,
         onClose: () => setModal((prev) => ({ ...prev, open: false })),
         title: "Product Not Found in Your Yummies",
         children: (
           <>
-          <SentimentVeryDissatisfiedIcon fontSize="large" />
+            <SentimentVeryDissatisfiedIcon fontSize="large" />
             <Typography>
               This product isn’t in your Yummies yet. Want to add it?
             </Typography>
@@ -235,8 +229,6 @@ export default function Home({ userData }: PageProps) {
                       name="ean"
                       sx={{ width: "100%" }}
                       label="Article Number"
-                      //value={manualEANValue}
-                      //onChange={(e) => setManualEANValue(e.target.value)}
                       placeholder="e.g., 43879528"
                       helperText="Enter a EAN or UPC Number"
                       variant="outlined"
@@ -266,9 +258,7 @@ export default function Home({ userData }: PageProps) {
                     />
                     <IconButton
                       aria-label="Submit article number"
-                      //onClick={(e) => handleSubmit(e)}
                       type="submit"
-                      //disabled={!manualEANValue.trim()}
                       color="primary"
                     >
                       <ArrowForwardIcon />
