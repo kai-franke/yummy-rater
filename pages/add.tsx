@@ -90,7 +90,7 @@ export default function AddProduct() {
       <Typography variant="h5" component="h2" gutterBottom>
         Add product
       </Typography>
-      <Scanner onScan={handleScan} onStartScanning={handleStartScanning} />
+      {/* <Scanner onScan={handleScan} onStartScanning={handleStartScanning} /> */}
       {error && (
         <Alert severity="warning">
           {error}

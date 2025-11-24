@@ -1,11 +1,27 @@
 import ProductForm from "@/components/ProductForm";
+import { getProductByEAN } from "@/services/productService";
 import { IProduct } from "@/types/product";
 import { useRouter } from "next/router";
 import { mutate } from "swr";
+import { useEffect, useState } from "react";
 
 export default function AddProductPage() {
   const router = useRouter();
   const { ean } = router.query;
+  const [product, setProduct] = useState<IProduct | null>(null);
+
+  useEffect(() => {
+    async function fetchProduct() {
+      try {
+        const productData = await getProductByEAN(String(ean));
+        setProduct(productData);
+      } catch (error) {
+        setProduct({ ean: Number(ean) });
+        console.error("Error fetching product data:", error);
+      }
+    }
+    fetchProduct();
+  }, [ean]);
 
   async function addProduct(data: IProduct) {
     const response = await fetch("/api/user/products", {
@@ -26,10 +42,12 @@ export default function AddProductPage() {
     }
   }
 
+  if (!product) return null; // Early return while useEffect is fetching data and no product is set yet
+
   return (
     <ProductForm
       onSubmit={addProduct}
-      initialData={{ ean: String(ean) }}
+      initialData={product ? product : { ean: String(ean) }}
     />
   );
 }

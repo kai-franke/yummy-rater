@@ -1,6 +1,9 @@
 import { useEffect, useState, useRef } from "react";
 import Quagga from "@ericblade/quagga2";
-import { Box, Button, Alert } from "@mui/material";
+import {
+  Box,
+  Alert
+} from "@mui/material";
 import { ScannerProps } from "@/types/scanner";
 import styled from "@emotion/styled";
 import { Global, css } from "@emotion/react";
@@ -14,11 +17,15 @@ const ScannerContainer = styled(Box)`
   background-color: var(--scanner-background);
 `;
 
-const FocusMark = styled(Box)<{ rotation: number }>`
+const FocusMark = styled(Box)<{ rotation: number; active: boolean }>`
   position: absolute;
   width: 6%;
   height: 15%;
-  border: min(15px, calc(5px + 1.5vw)) solid var(--scanner-focus-marks);
+  border: min(15px, calc(5px + 1.5vw)) solid
+    ${({ active }) =>
+      active
+        ? "var(--scanner-focus-marks)"
+        : "var(--scanner-focus-marks-inactive)"};
   border-right: none;
   border-bottom: none;
   transform: rotate(${(props) => props.rotation}deg);
@@ -50,8 +57,7 @@ const CameraErrorMessage = styled(Alert)`
   transform: translate(-50%, -50%);
 `;
 
-export default function Scanner({ onScan, onStartScanning }: ScannerProps) {
-  const [isScanning, setIsScanning] = useState(false);
+export default function Scanner({ onScan, onStartScanning, isScanning }: ScannerProps) {
   const [hasError, setHasError] = useState(false);
   const videoRef = useRef();
 
@@ -76,7 +82,7 @@ export default function Scanner({ onScan, onStartScanning }: ScannerProps) {
             if (err.name === "NotAllowedError") {
               setHasError(true);
             }
-            setIsScanning(false);
+            //setIsScanning(false); <= toggleScanning in parent component
             console.error("Error initializing Quagga: ", err);
             return;
           }
@@ -88,7 +94,6 @@ export default function Scanner({ onScan, onStartScanning }: ScannerProps) {
         const code = result.codeResult.code;
         if (code) {
           onScan(code);
-          toggleScanning();
         } else {
           console.warn("Scanned code is null");
         }
@@ -101,23 +106,40 @@ export default function Scanner({ onScan, onStartScanning }: ScannerProps) {
     }
   }, [isScanning, onScan]);
 
-  function toggleScanning() {
-    const newIsScanning = !isScanning;
-    setIsScanning(newIsScanning);
-    if (newIsScanning && onStartScanning) {
-      onStartScanning();
-    }
-  }
+  // function handleSubmit(e: React.FormEvent) {
+  //   e.preventDefault();
+  //   const trimmedValue = manualEANValue.trim();
+  //   if (trimmedValue) {
+  //     onScan(trimmedValue);
+  //     setManualEANValue("");
+  //     setShowEANInput(false);
+  //   }
+  // }
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center">
       <Global styles={videoElementCss} />
-
       <ScannerContainer>
-        <FocusMark rotation={0} style={{ top: "15%", left: "6%" }} />
-        <FocusMark rotation={90} style={{ top: "15%", right: "6%" }} />
-        <FocusMark rotation={270} style={{ bottom: "15%", left: "6%" }} />
-        <FocusMark rotation={180} style={{ bottom: "15%", right: "6%" }} />
+        <FocusMark
+          active={isScanning}
+          rotation={0}
+          style={{ top: "15%", left: "6%" }}
+        />
+        <FocusMark
+          active={isScanning}
+          rotation={90}
+          style={{ top: "15%", right: "6%" }}
+        />
+        <FocusMark
+          active={isScanning}
+          rotation={270}
+          style={{ bottom: "15%", left: "6%" }}
+        />
+        <FocusMark
+          active={isScanning}
+          rotation={180}
+          style={{ bottom: "15%", right: "6%" }}
+        />
         {hasError && (
           <CameraErrorMessage severity="error">
             Please allow access to the camera.
@@ -125,15 +147,6 @@ export default function Scanner({ onScan, onStartScanning }: ScannerProps) {
         )}
         {isScanning && <VideoBox ref={videoRef} id="video" />}
       </ScannerContainer>
-
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={toggleScanning}
-        sx={{ mt: 2 }}
-      >
-        {isScanning ? "Stop" : "Scan"}
-      </Button>
     </Box>
   );
 }
