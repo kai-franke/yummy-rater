@@ -11,6 +11,7 @@ export interface ModalAction {
     | "info"
     | "warning";
   startIcon?: React.ReactNode;
+  disabled?: boolean;
 }
 
 export interface ModalProps {
