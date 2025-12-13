@@ -24,6 +24,8 @@ import { PageProps } from "@/types/pageProps";
 import { useRouter } from "next/router";
 import ProductCard from "@/components/ProductCard";
 import Modal from "@/components/Modal";
+import { useDeleteProduct } from "@/hooks/useDeleteProduct";
+import DeleteConfirmModal from "@/components/DeleteConfirmModal";
 
 type Mode = "idle" | "scanning" | "manual";
 
@@ -39,6 +41,7 @@ export default function Home({ userData }: PageProps) {
   const router = useRouter();
   const isScanning = mode === "scanning"; // creates a boolean based on the mode useState
   const isManual = mode === "manual";
+  const deletion = useDeleteProduct();
 
   function handleResult(ean: string) {
     setMode("idle"); // stop scanning after a successful scan
@@ -73,6 +76,12 @@ export default function Home({ userData }: PageProps) {
           </Box>
         ),
         actions: [
+          {
+            label: "Delete",
+            variant: "outlined",
+            color: "error",
+            onClick: () => deletion.askDelete(existingProduct),
+          },
           {
             label: "Edit",
             onClick: () => {
@@ -306,6 +315,13 @@ export default function Home({ userData }: PageProps) {
       >
         {modal.children}
       </Modal>
+      <DeleteConfirmModal
+        open={deletion.open}
+        product={deletion.productToDelete}
+        loading={deletion.loading}
+        onCancel={deletion.cancelDelete}
+        onConfirm={deletion.confirmDelete}
+      />
     </>
   );
 }

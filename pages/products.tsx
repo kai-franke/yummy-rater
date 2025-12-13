@@ -6,6 +6,8 @@ import { IProduct } from "@/types/product";
 import { ModalAction } from "@/types/modal";
 import Modal from "@/components/Modal";
 import ProductCard from "@/components/ProductCard";
+import { useDeleteProduct } from "@/hooks/useDeleteProduct";
+import DeleteConfirmModal from "@/components/DeleteConfirmModal";
 
 import {
   Avatar,
@@ -52,6 +54,7 @@ export default function Products({ userData }: PageProps) {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const router = useRouter();
+  const deletion = useDeleteProduct();
 
   const modalOpen = !!selectedProduct; // converts selectedProduct to a boolean value
   const modalActions: ModalAction[] = [
@@ -59,7 +62,7 @@ export default function Products({ userData }: PageProps) {
       label: "Delete",
       variant: "outlined",
       onClick: () => {
-        setShowConfirmDelete(true);
+        if (selectedProduct) deletion.askDelete(selectedProduct);
       },
       startIcon: <DeleteIcon />,
     },
@@ -256,84 +259,13 @@ export default function Products({ userData }: PageProps) {
         </Box>
       </Modal>
 
-      <Modal
-        open={showConfirmDelete}
-        onClose={() => setShowConfirmDelete(false)}
-        title="Confirm Deletion"
-        actions={[
-          {
-            label: "Cancel",
-            variant: "outlined",
-            onClick: () => {
-              setShowConfirmDelete(false);
-              setSnackbarMessage(`Process canceled.`);
-              setSnackbarOpen(true);
-            },
-          },
-          {
-            label: "Delete",
-            variant: "contained",
-            color: "error",
-            onClick: async () => {
-              if (selectedProduct) {
-                const response = await fetch(
-                  `/api/user/products/${selectedProduct.ean}`,
-                  {
-                    method: "DELETE",
-                  }
-                );
-                setSnackbarMessage(
-                  response.ok
-                    ? `Product ${selectedProduct.name} deleted successfully`
-                    : `Error deleting product ${selectedProduct.name}: ${response.statusText}`
-                );
-                mutate("/api/user"); // Revalidate the products list
-                setSelectedProduct(null);
-                setShowConfirmDelete(false);
-                setSnackbarOpen(true);
-              }
-            },
-          },
-        ]}
-      >
-        <Typography>
-          Do you really want to delete the product{" "}
-          <Box
-            component="span"
-            sx={{ fontWeight: "bold", color: "primary.main" }}
-          >
-            {selectedProduct?.name}
-          </Box>{" "}
-          permanently?
-          <Box
-            component="span"
-            sx={{ fontWeight: "bold", color: "error.main" }}
-          >
-            {" "}
-            This action cannot be undone.
-          </Box>
-        </Typography>
-      </Modal>
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={3000}
-        onClose={() => setSnackbarOpen(false)}
-      >
-        <SnackbarContent
-          sx={{ backgroundColor: theme.palette.secondary.main, color: "black" }}
-          message={snackbarMessage}
-          action={
-            <IconButton
-              size="small"
-              aria-label="close"
-              color="inherit"
-              onClick={() => setSnackbarOpen(false)}
-            >
-              <CloseIcon fontSize="small" />
-            </IconButton>
-          }
-        />
-      </Snackbar>
+      <DeleteConfirmModal
+        open={deletion.open}
+        product={deletion.productToDelete}
+        loading={deletion.loading}
+        onCancel={deletion.cancelDelete}
+        onConfirm={deletion.confirmDelete}
+      />
     </>
   );
 }
