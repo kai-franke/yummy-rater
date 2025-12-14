@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react";
 import Fuse from "fuse.js";
-import { mutate } from "swr";
 import { PageProps } from "@/types/pageProps";
 import { IProduct } from "@/types/product";
 import { ModalAction } from "@/types/modal";
@@ -49,11 +48,11 @@ export default function Products({ userData }: PageProps) {
     });
   }, [userData]);
   const [selectedProduct, setSelectedProduct] = useState<IProduct | null>(null);
-  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [filterTerm, setFilterTerm] = useState("");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const router = useRouter();
+  // Delete product hook with callbacks
   const deletion = useDeleteProduct({
     onSuccess: (deletedProduct) => {
       setSelectedProduct(null); // close modal after deletion
@@ -108,6 +107,7 @@ export default function Products({ userData }: PageProps) {
     user_note: !isMobile,
   };
 
+  // Fuse.js fuzzy search setup
   const fuse = useMemo(() => {
     return new Fuse(allProducts, {
       keys: ["name", "brand", "ean", "description", "user_note"],
@@ -115,7 +115,7 @@ export default function Products({ userData }: PageProps) {
     });
   }, [allProducts]);
   // useMemo is used here to prevent the creation of a new instance of Fuse on every render
-
+  
   const displayedProducts = useMemo(() => {
     return filterTerm
       ? fuse.search(filterTerm).map((result) => result.item)

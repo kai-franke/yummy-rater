@@ -29,6 +29,7 @@ import ProductCard from "@/components/ProductCard";
 import Modal from "@/components/Modal";
 import { useDeleteProduct } from "@/hooks/useDeleteProduct";
 import DeleteConfirmModal from "@/components/DeleteConfirmModal";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 type Mode = "idle" | "scanning" | "manual";
 
@@ -47,6 +48,7 @@ export default function Home({ userData }: PageProps) {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const theme = useTheme();
+  // Delete product hook with callbacks
   const deletion = useDeleteProduct({
     onSuccess: (deletedProduct) => {
       setModal((prev) => ({ ...prev, open: false }));
@@ -98,6 +100,7 @@ export default function Home({ userData }: PageProps) {
             label: "Delete",
             variant: "outlined",
             color: "error",
+            startIcon: <DeleteIcon />,
             onClick: () => deletion.askDelete(existingProduct),
           },
           {
@@ -118,7 +121,6 @@ export default function Home({ userData }: PageProps) {
             color: "primary",
             startIcon: <CloseIcon />,
           },
-          // Delete Button should be here as well
         ],
       });
     } else {
