@@ -2,7 +2,10 @@ import { useState } from "react";
 import { mutate } from "swr";
 import { IProduct } from "@/types/product";
 
-export function useDeleteProduct() {
+export function useDeleteProduct(options?: {
+  onSuccess?: (product: IProduct) => void;
+  onError?: (error: unknown) => void;
+}) {
   const [open, setOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<IProduct | null>(null);
   const [loading, setLoading] = useState(false);
@@ -28,6 +31,10 @@ export function useDeleteProduct() {
       }
 
       mutate("/api/user"); // revalidate products
+
+      options?.onSuccess?.(productToDelete);
+    } catch (error) {
+      options?.onError?.(error);
     } finally {
       setLoading(false);
       setOpen(false);

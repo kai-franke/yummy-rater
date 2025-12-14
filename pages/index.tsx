@@ -9,6 +9,9 @@ import {
   Box,
   TextField,
   InputAdornment,
+  Snackbar,
+  SnackbarContent,
+  useTheme,
 } from "@mui/material";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import ClearIcon from "@mui/icons-material/Clear";
@@ -41,7 +44,22 @@ export default function Home({ userData }: PageProps) {
   const router = useRouter();
   const isScanning = mode === "scanning"; // creates a boolean based on the mode useState
   const isManual = mode === "manual";
-  const deletion = useDeleteProduct();
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const theme = useTheme();
+  const deletion = useDeleteProduct({
+    onSuccess: (deletedProduct) => {
+      setModal((prev) => ({ ...prev, open: false }));
+      setSnackbarMessage(
+        `Product "${deletedProduct.name}" deleted successfully`
+      );
+      setSnackbarOpen(true);
+    },
+    onError: () => {
+      setSnackbarMessage("Error deleting product");
+      setSnackbarOpen(true);
+    },
+  });
 
   function handleResult(ean: string) {
     setMode("idle"); // stop scanning after a successful scan
@@ -322,6 +340,29 @@ export default function Home({ userData }: PageProps) {
         onCancel={deletion.cancelDelete}
         onConfirm={deletion.confirmDelete}
       />
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={4000}
+        onClose={() => setSnackbarOpen(false)}
+      >
+        <SnackbarContent
+          sx={{
+            backgroundColor: theme.palette.secondary.main,
+            color: "black",
+          }}
+          message={snackbarMessage}
+          action={
+            <IconButton
+              size="small"
+              aria-label="close"
+              color="inherit"
+              onClick={() => setSnackbarOpen(false)}
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          }
+        />
+      </Snackbar>
     </>
   );
 }

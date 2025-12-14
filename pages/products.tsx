@@ -54,13 +54,26 @@ export default function Products({ userData }: PageProps) {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const router = useRouter();
-  const deletion = useDeleteProduct();
+  const deletion = useDeleteProduct({
+    onSuccess: (deletedProduct) => {
+      setSelectedProduct(null); // close modal after deletion
+      setSnackbarMessage(
+        `Product "${deletedProduct.name}" deleted successfully`
+      );
+      setSnackbarOpen(true);
+    },
+    onError: () => {
+      setSnackbarMessage("Error deleting product");
+      setSnackbarOpen(true);
+    },
+  });
 
   const modalOpen = !!selectedProduct; // converts selectedProduct to a boolean value
   const modalActions: ModalAction[] = [
     {
       label: "Delete",
       variant: "outlined",
+      color: "error",
       onClick: () => {
         if (selectedProduct) deletion.askDelete(selectedProduct);
       },
@@ -266,6 +279,26 @@ export default function Products({ userData }: PageProps) {
         onCancel={deletion.cancelDelete}
         onConfirm={deletion.confirmDelete}
       />
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={4000}
+        onClose={() => setSnackbarOpen(false)}
+      >
+        <SnackbarContent
+          sx={{ backgroundColor: theme.palette.secondary.main, color: "black" }}
+          message={snackbarMessage}
+          action={
+            <IconButton
+              size="small"
+              aria-label="close"
+              color="inherit"
+              onClick={() => setSnackbarOpen(false)}
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          }
+        />
+      </Snackbar>
     </>
   );
 }
