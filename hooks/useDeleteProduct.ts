@@ -2,7 +2,7 @@ import { useState } from "react";
 import { mutate } from "swr";
 import { IProduct } from "@/types/product";
 
-export function useDeleteProduct(options?: {
+export function useDeleteProduct(callbacks?: {
   onSuccess?: (product: IProduct) => void;
   onError?: (error: unknown) => void;
 }) {
@@ -32,9 +32,9 @@ export function useDeleteProduct(options?: {
 
       mutate("/api/user"); // revalidate products
 
-      options?.onSuccess?.(productToDelete);
+      callbacks?.onSuccess?.(productToDelete);
     } catch (error) {
-      options?.onError?.(error);
+      callbacks?.onError?.(error);
     } finally {
       setLoading(false);
       setOpen(false);
