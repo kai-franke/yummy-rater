@@ -2,13 +2,13 @@ import { useState } from "react";
 import { mutate } from "swr";
 import { IProduct } from "@/types/product";
 
-export function useDeleteProduct(callbacks?: {
-  onSuccess?: (product: IProduct) => void;
-  onError?: (error: unknown) => void;
+export function useDeleteProduct(callbacks: {
+  onSuccess: (product: IProduct) => void;
+  onError: (error: unknown) => void;
 }) {
   const [open, setOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<IProduct | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   function askDelete(product: IProduct) {
     setProductToDelete(product);
@@ -19,7 +19,7 @@ export function useDeleteProduct(callbacks?: {
     if (!productToDelete) return;
 
     try {
-      setLoading(true);
+      setIsLoading(true);
 
       const response = await fetch(
         `/api/user/products/${productToDelete.ean}`,
@@ -32,11 +32,11 @@ export function useDeleteProduct(callbacks?: {
 
       mutate("/api/user"); // revalidate products
 
-      callbacks?.onSuccess?.(productToDelete);
+      callbacks.onSuccess(productToDelete);
     } catch (error) {
-      callbacks?.onError?.(error);
+      callbacks.onError(error);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
       setOpen(false);
       setProductToDelete(null);
     }
@@ -49,7 +49,7 @@ export function useDeleteProduct(callbacks?: {
 
   return {
     open,
-    loading,
+    isLoading,
     productToDelete,
     askDelete,
     confirmDelete,

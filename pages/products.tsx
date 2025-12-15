@@ -53,7 +53,14 @@ export default function Products({ userData }: PageProps) {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const router = useRouter();
   // Delete product hook with callbacks
-  const deletion = useDeleteProduct({
+  const {
+    open,
+    productToDelete,
+    isLoading,
+    cancelDelete,
+    confirmDelete,
+    askDelete,
+  } = useDeleteProduct({
     onSuccess: (deletedProduct) => {
       setSelectedProduct(null); // close modal after deletion
       setSnackbarMessage(
@@ -74,7 +81,7 @@ export default function Products({ userData }: PageProps) {
       variant: "outlined",
       color: "error",
       onClick: () => {
-        if (selectedProduct) deletion.askDelete(selectedProduct);
+        if (selectedProduct) askDelete(selectedProduct);
       },
       startIcon: <DeleteIcon />,
     },
@@ -115,7 +122,7 @@ export default function Products({ userData }: PageProps) {
     });
   }, [allProducts]);
   // useMemo is used here to prevent the creation of a new instance of Fuse on every render
-  
+
   const displayedProducts = useMemo(() => {
     return filterTerm
       ? fuse.search(filterTerm).map((result) => result.item)
@@ -273,11 +280,11 @@ export default function Products({ userData }: PageProps) {
       </Modal>
 
       <DeleteConfirmModal
-        open={deletion.open}
-        product={deletion.productToDelete}
-        loading={deletion.loading}
-        onCancel={deletion.cancelDelete}
-        onConfirm={deletion.confirmDelete}
+        open={open}
+        product={productToDelete}
+        isLoading={isLoading}
+        onCancel={cancelDelete}
+        onConfirm={confirmDelete}
       />
       <Snackbar
         open={snackbarOpen}

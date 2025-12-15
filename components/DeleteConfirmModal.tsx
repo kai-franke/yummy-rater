@@ -5,7 +5,7 @@ import { IProduct } from "@/types/product";
 type Props = {
   open: boolean;
   product: IProduct | null;
-  loading?: boolean;
+  isLoading?: boolean;
   onCancel: () => void;
   onConfirm: () => void;
 };
@@ -13,7 +13,7 @@ type Props = {
 export default function DeleteConfirmModal({
   open,
   product,
-  loading,
+  isLoading,
   onCancel,
   onConfirm,
 }: Props) {
@@ -35,7 +35,7 @@ export default function DeleteConfirmModal({
           variant: "contained",
           color: "error",
           onClick: onConfirm,
-          disabled: loading,
+          disabled: isLoading,
         },
       ]}
     >

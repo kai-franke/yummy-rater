@@ -45,11 +45,19 @@ export default function Home({ userData }: PageProps) {
   const router = useRouter();
   const isScanning = mode === "scanning"; // creates a boolean based on the mode useState
   const isManual = mode === "manual";
+  const hasProducts = userData?.products && userData.products.length > 0;
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const theme = useTheme();
   // Delete product hook with callbacks
-  const deletion = useDeleteProduct({
+  const {
+    open,
+    productToDelete,
+    isLoading,
+    cancelDelete,
+    confirmDelete,
+    askDelete,
+  } = useDeleteProduct({
     onSuccess: (deletedProduct) => {
       setModal((prev) => ({ ...prev, open: false }));
       setSnackbarMessage(
@@ -101,7 +109,7 @@ export default function Home({ userData }: PageProps) {
             variant: "outlined",
             color: "error",
             startIcon: <DeleteIcon />,
-            onClick: () => deletion.askDelete(existingProduct),
+            onClick: () => askDelete(existingProduct),
           },
           {
             label: "Edit",
@@ -165,46 +173,48 @@ export default function Home({ userData }: PageProps) {
   return (
     <>
       <Stack spacing={5}>
-        <Card
-          sx={{
-            borderRadius: 4,
-            p: 2,
-            backgroundImage: "url('/yummy-rater_card_background_star.jpg')",
-            backgroundRepeat: "no-repeat",
-            backgroundPosition: "right bottom",
-            backgroundSize: "cover",
-          }}
-        >
-          <CardContent>
-            <Typography variant="h6" component="h3" gutterBottom>
-              Get started
-            </Typography>
-            <Typography variant="body2">
-              {`It looks like you don't have any Yummies yet. Start by scanning a
+        {!hasProducts && (
+          <Card
+            sx={{
+              borderRadius: 4,
+              p: 2,
+              backgroundImage: "url('/yummy-rater_card_background_star.jpg')",
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "right bottom",
+              backgroundSize: "cover",
+            }}
+          >
+            <CardContent>
+              <Typography variant="h6" component="h3" gutterBottom>
+                Get started
+              </Typography>
+              <Typography variant="body2">
+                {`It looks like you don't have any Yummies yet. Start by scanning a
               product and then add it to your Yummies.`}
-            </Typography>
-          </CardContent>
-          <CardActions sx={{ justifyContent: "center" }}>
-            <IconButton
-              sx={{
-                width: 60,
-                height: 60,
-                "& .MuiSvgIcon-root": {
-                  fontSize: 35, // Icon-Größe
-                },
-              }}
-              onClick={() =>
-                document
-                  .getElementById("scan-section")
-                  ?.scrollIntoView({ behavior: "smooth" })
-              }
-              color="primary"
-              aria-label="jump to scan"
-            >
-              <ArrowDownwardIcon />
-            </IconButton>
-          </CardActions>
-        </Card>
+              </Typography>
+            </CardContent>
+            <CardActions sx={{ justifyContent: "center" }}>
+              <IconButton
+                sx={{
+                  width: 60,
+                  height: 60,
+                  "& .MuiSvgIcon-root": {
+                    fontSize: 35, // Icon-Größe
+                  },
+                }}
+                onClick={() =>
+                  document
+                    .getElementById("scan-section")
+                    ?.scrollIntoView({ behavior: "smooth" })
+                }
+                color="primary"
+                aria-label="jump to scan"
+              >
+                <ArrowDownwardIcon />
+              </IconButton>
+            </CardActions>
+          </Card>
+        )}
         <Card
           id="scan-section"
           sx={{
@@ -336,11 +346,11 @@ export default function Home({ userData }: PageProps) {
         {modal.children}
       </Modal>
       <DeleteConfirmModal
-        open={deletion.open}
-        product={deletion.productToDelete}
-        loading={deletion.loading}
-        onCancel={deletion.cancelDelete}
-        onConfirm={deletion.confirmDelete}
+        open={open}
+        product={productToDelete}
+        isLoading={isLoading}
+        onCancel={cancelDelete}
+        onConfirm={confirmDelete}
       />
       <Snackbar
         open={snackbarOpen}
