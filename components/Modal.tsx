@@ -31,6 +31,7 @@ export default function Modal({
             variant={action.variant}
             color={action.color}
             startIcon={action.startIcon}
+            disabled={action.disabled}
           >
             {action.label}
           </Button>

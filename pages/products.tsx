@@ -1,11 +1,12 @@
 import { useMemo, useState } from "react";
 import Fuse from "fuse.js";
-import { mutate } from "swr";
 import { PageProps } from "@/types/pageProps";
 import { IProduct } from "@/types/product";
 import { ModalAction } from "@/types/modal";
 import Modal from "@/components/Modal";
 import ProductCard from "@/components/ProductCard";
+import { useDeleteProduct } from "@/hooks/useDeleteProduct";
+import DeleteConfirmModal from "@/components/DeleteConfirmModal";
 
 import {
   Avatar,
@@ -47,19 +48,40 @@ export default function Products({ userData }: PageProps) {
     });
   }, [userData]);
   const [selectedProduct, setSelectedProduct] = useState<IProduct | null>(null);
-  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [filterTerm, setFilterTerm] = useState("");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const router = useRouter();
+  // Delete product hook with callbacks
+  const {
+    open,
+    productToDelete,
+    isLoading,
+    cancelDelete,
+    confirmDelete,
+    askDelete,
+  } = useDeleteProduct({
+    onSuccess: (deletedProduct) => {
+      setSelectedProduct(null); // close modal after deletion
+      setSnackbarMessage(
+        `Product "${deletedProduct.name}" deleted successfully`
+      );
+      setSnackbarOpen(true);
+    },
+    onError: () => {
+      setSnackbarMessage("Error deleting product");
+      setSnackbarOpen(true);
+    },
+  });
 
   const modalOpen = !!selectedProduct; // converts selectedProduct to a boolean value
   const modalActions: ModalAction[] = [
     {
       label: "Delete",
       variant: "outlined",
+      color: "error",
       onClick: () => {
-        setShowConfirmDelete(true);
+        if (selectedProduct) askDelete(selectedProduct);
       },
       startIcon: <DeleteIcon />,
     },
@@ -92,6 +114,7 @@ export default function Products({ userData }: PageProps) {
     user_note: !isMobile,
   };
 
+  // Fuse.js fuzzy search setup
   const fuse = useMemo(() => {
     return new Fuse(allProducts, {
       keys: ["name", "brand", "ean", "description", "user_note"],
@@ -256,67 +279,16 @@ export default function Products({ userData }: PageProps) {
         </Box>
       </Modal>
 
-      <Modal
-        open={showConfirmDelete}
-        onClose={() => setShowConfirmDelete(false)}
-        title="Confirm Deletion"
-        actions={[
-          {
-            label: "Cancel",
-            variant: "outlined",
-            onClick: () => {
-              setShowConfirmDelete(false);
-              setSnackbarMessage(`Process canceled.`);
-              setSnackbarOpen(true);
-            },
-          },
-          {
-            label: "Delete",
-            variant: "contained",
-            color: "error",
-            onClick: async () => {
-              if (selectedProduct) {
-                const response = await fetch(
-                  `/api/user/products/${selectedProduct.ean}`,
-                  {
-                    method: "DELETE",
-                  }
-                );
-                setSnackbarMessage(
-                  response.ok
-                    ? `Product ${selectedProduct.name} deleted successfully`
-                    : `Error deleting product ${selectedProduct.name}: ${response.statusText}`
-                );
-                mutate("/api/user"); // Revalidate the products list
-                setSelectedProduct(null);
-                setShowConfirmDelete(false);
-                setSnackbarOpen(true);
-              }
-            },
-          },
-        ]}
-      >
-        <Typography>
-          Do you really want to delete the product{" "}
-          <Box
-            component="span"
-            sx={{ fontWeight: "bold", color: "primary.main" }}
-          >
-            {selectedProduct?.name}
-          </Box>{" "}
-          permanently?
-          <Box
-            component="span"
-            sx={{ fontWeight: "bold", color: "error.main" }}
-          >
-            {" "}
-            This action cannot be undone.
-          </Box>
-        </Typography>
-      </Modal>
+      <DeleteConfirmModal
+        open={open}
+        product={productToDelete}
+        isLoading={isLoading}
+        onCancel={cancelDelete}
+        onConfirm={confirmDelete}
+      />
       <Snackbar
         open={snackbarOpen}
-        autoHideDuration={3000}
+        autoHideDuration={4000}
         onClose={() => setSnackbarOpen(false)}
       >
         <SnackbarContent
