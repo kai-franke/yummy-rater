@@ -10,6 +10,10 @@ export const authOptions: NextAuthOptions = {
     }),
     // ...add more providers here
   ],
+  theme: {
+    colorScheme: "light",
+    logo: "/yummy_rater_logo_dark.svg",
+  },
 };
 
 export default NextAuth(authOptions);
