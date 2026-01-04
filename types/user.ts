@@ -3,11 +3,11 @@ import { IProduct } from "./product";
 
 export interface IUser extends Document {
   _id: ObjectId;
-  provider_id: string;
+  provider_ids: string[];
   first_name?: string;
   last_name?: string;
   profile_image?: string;
-  email?: string;
+  email: string;
   products: IProduct[];
 }
 
