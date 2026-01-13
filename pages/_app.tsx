@@ -1,6 +1,6 @@
 import type { AppProps } from "next/app";
 import { Global } from "@emotion/react";
-import { SessionProvider, useSession } from "next-auth/react";
+import { SessionProvider, useSession, signIn } from "next-auth/react";
 import useSWR from "swr";
 import { useEffect } from "react";
 import { global } from "@/global-style";
@@ -77,10 +77,15 @@ export default function App({
 }
 
 function Auth({ children }: AuthProps) {
-  const { status } = useSession({ required: true });
+  const { status } = useSession();
 
   if (status === "loading") {
     return <div>Is Loading...</div>;
   }
+  
+  if (status === "unauthenticated") {
+    signIn();
+  }
+
   return children;
 }
