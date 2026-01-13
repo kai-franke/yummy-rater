@@ -136,7 +136,6 @@ export default function Home({ userData }: PageProps) {
   return (
     <>
       <Stack spacing={5}>
-        {userData.products.length === 0 && (
           <Card
             sx={{
               borderRadius: 4,
@@ -177,8 +176,6 @@ export default function Home({ userData }: PageProps) {
               </IconButton>
             </CardActions>
           </Card>
-        )}
-
         <Card
           id="scan-section"
           sx={{
