@@ -15,7 +15,7 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   theme: {
-    colorScheme: "light",
+    colorScheme: "auto",
     logo: "/yummy_rater_logo_dark.svg",
   },
 };
