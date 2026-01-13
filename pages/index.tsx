@@ -136,46 +136,49 @@ export default function Home({ userData }: PageProps) {
   return (
     <>
       <Stack spacing={5}>
-        <Card
-          sx={{
-            borderRadius: 4,
-            p: 2,
-            backgroundImage: "url('/yummy-rater_card_background_star.jpg')",
-            backgroundRepeat: "no-repeat",
-            backgroundPosition: "right bottom",
-            backgroundSize: "cover",
-          }}
-        >
-          <CardContent>
-            <Typography variant="h6" component="h3" gutterBottom>
-              Get started
-            </Typography>
-            <Typography variant="body2">
-              {`It looks like you don't have any Yummies yet. Start by scanning a
+        {userData.products.length === 0 && (
+          <Card
+            sx={{
+              borderRadius: 4,
+              p: 2,
+              backgroundImage: "url('/yummy-rater_card_background_star.jpg')",
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "right bottom",
+              backgroundSize: "cover",
+            }}
+          >
+            <CardContent>
+              <Typography variant="h6" component="h3" gutterBottom>
+                Get started
+              </Typography>
+              <Typography variant="body2">
+                {`It looks like you don't have any Yummies yet. Start by scanning a
               product and then add it to your Yummies.`}
-            </Typography>
-          </CardContent>
-          <CardActions sx={{ justifyContent: "center" }}>
-            <IconButton
-              sx={{
-                width: 60,
-                height: 60,
-                "& .MuiSvgIcon-root": {
-                  fontSize: 35, // Icon-Größe
-                },
-              }}
-              onClick={() =>
-                document
-                  .getElementById("scan-section")
-                  ?.scrollIntoView({ behavior: "smooth" })
-              }
-              color="primary"
-              aria-label="jump to scan"
-            >
-              <ArrowDownwardIcon />
-            </IconButton>
-          </CardActions>
-        </Card>
+              </Typography>
+            </CardContent>
+            <CardActions sx={{ justifyContent: "center" }}>
+              <IconButton
+                sx={{
+                  width: 60,
+                  height: 60,
+                  "& .MuiSvgIcon-root": {
+                    fontSize: 35, // Icon-Größe
+                  },
+                }}
+                onClick={() =>
+                  document
+                    .getElementById("scan-section")
+                    ?.scrollIntoView({ behavior: "smooth" })
+                }
+                color="primary"
+                aria-label="jump to scan"
+              >
+                <ArrowDownwardIcon />
+              </IconButton>
+            </CardActions>
+          </Card>
+        )}
+
         <Card
           id="scan-section"
           sx={{
