@@ -19,11 +19,11 @@ const productSchema = new Schema<IProduct>(
 
 const userSchema = new Schema<IUser>(
   {
-    provider_ids: [{ type: String }],
+    provider_id: { type: String, required: true, unique: true, index: true },
     first_name: String,
     last_name: String,
     profile_image: String,
-    email: { type: String, required: true, unique: true, index: true },
+    email: String,
     products: [productSchema],
   },
   { timestamps: true }

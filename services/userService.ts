@@ -1,10 +1,11 @@
 import User from "@/models/User";
 import { IUser, ISanitizedUser } from "@/types/user";
 
-export async function findUserByEmail(
-  email: string
+export async function findUserByProviderId(
+  providerId: string
 ): Promise<ISanitizedUser | null> {
-  const user = await User.findOne({ email });
+
+  const user = await User.findOne({ provider_id: providerId });
   if (!user) {
     return null;
   }
@@ -20,26 +21,9 @@ export async function findUserByEmail(
   return sanitizedUser;
 }
 
-export async function findOrCreateUser(
-  providerId: string,
-  email: string
-): Promise<IUser> {
-  // Try to find existing user by email
-  let user = await User.findOne({ email });
-
-  if (user) {
-    // User exists, add provider_id if not already present
-    if (!user.provider_ids.includes(providerId)) {
-      user.provider_ids.push(providerId);
-      await user.save();
-    }
-    return user;
-  }
-
-  // Create new user
+export async function createUser(providerId: string): Promise<IUser> {
   const newUser = new User({
-    email,
-    provider_ids: [providerId],
+    provider_id: providerId,
   });
   return await newUser.save();
 }
