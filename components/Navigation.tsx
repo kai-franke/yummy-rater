@@ -38,13 +38,6 @@ export default function Navigation() {
           icon={<StarIcon />}
           component={Link}
         />
-        <BottomNavigationAction
-          href="/profile"
-          value="/profile"
-          label="Profile"
-          icon={<AccountBoxIcon />}
-          component={Link}
-        />
       </BottomNavigation>
     </Paper>
     // </Box>
