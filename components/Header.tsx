@@ -11,7 +11,7 @@ function Header() {
             height: 23,
           }}
           alt="Yummy Rater"
-          src="./yummy_rater_logo.svg"
+          src="/yummy_rater_logo.svg"
         />
         {/* Box with flexGrow works like a spacer */}
         <Box sx={{ flexGrow: 1 }} />

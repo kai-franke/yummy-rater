@@ -106,15 +106,6 @@ export default function Scanner({ onScan, onStartScanning, isScanning }: Scanner
     }
   }, [isScanning, onScan]);
 
-  // function handleSubmit(e: React.FormEvent) {
-  //   e.preventDefault();
-  //   const trimmedValue = manualEANValue.trim();
-  //   if (trimmedValue) {
-  //     onScan(trimmedValue);
-  //     setManualEANValue("");
-  //     setShowEANInput(false);
-  //   }
-  // }
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center">
