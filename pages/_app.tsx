@@ -1,11 +1,13 @@
 import type { AppProps } from "next/app";
 import { Global } from "@emotion/react";
-import { SessionProvider, useSession, signIn } from "next-auth/react";
+import { SessionProvider, useSession } from "next-auth/react";
+import SignIn from "@/components/SignIn";
 import useSWR from "swr";
 import { useEffect } from "react";
 import { global } from "@/global-style";
 import { ReactNode } from "react";
 import Layout from "@/components/Layout";
+import { useRouter } from "next/router";
 import Head from "next/head";
 import { ThemeProvider, CssBaseline } from "@mui/material";
 import theme from "@/styles/theme";
@@ -47,7 +49,7 @@ export default function App({
         });
     }
   }, [error, mutate]);
-
+  // TODO: better loading state
   if (isLoading) {
     return <h2>Is Loading...</h2>;
   }
@@ -78,14 +80,21 @@ export default function App({
 
 function Auth({ children }: AuthProps) {
   const { status } = useSession();
+  const router = useRouter();
+
+  // Redirect unauthenticated users to the index page
+  useEffect(() => {
+    if (status === "unauthenticated" && router.pathname !== "/") {
+      router.replace("/");
+    }
+  }, [status]);
 
   if (status === "loading") {
+      // TODO: better loading state
     return <div>Is Loading...</div>;
+  } else if (status === "unauthenticated") {
+    return <SignIn />;
+  } else {
+    return <>{children}</>;
   }
-  
-  if (status === "unauthenticated") {
-    signIn();
-  }
-
-  return children;
 }
