@@ -48,7 +48,7 @@ export default function SignIn() {
               borderRadius: 3,
               p: 3,
               mx: 2,
-              maxWidth: 300,
+              maxWidth: 350,
               zIndex: 1,
             }}
           >

@@ -18,12 +18,11 @@ export default function Modal({
     <Dialog
       open={open}
       onClose={onClose}
-      fullWidth
       aria-label={title || "Dialog"}
     >
       {title && <DialogTitle>{title}</DialogTitle>}
       <DialogContent>{children}</DialogContent>
-      <DialogActions sx={{ justifyContent: "center" }}>
+      <DialogActions sx={{ justifyContent: "center", p: 2 }}>
         {actions.map((action, index) => (
           <Button
             key={index}
