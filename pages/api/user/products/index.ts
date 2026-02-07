@@ -23,7 +23,7 @@ export default async function handler(
 
   await dbConnect();
 
-  const { ean, name, brand, description, image, user_rating, user_note } =
+  const { ean, name, brand, description, image, public_id, user_rating, user_note } =
     req.body;
 
   // Überprüfe, ob 'ean' vorhanden und eine Zahl ist
@@ -40,6 +40,7 @@ export default async function handler(
     brand: brand ?? undefined,
     description: description ?? undefined,
     image: image ?? undefined,
+    public_id: public_id ?? undefined,
     user_rating: Number(user_rating) ?? undefined,
     user_note: user_note ?? undefined,
   };

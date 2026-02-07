@@ -11,6 +11,7 @@ const productSchema = new Schema<IProduct>(
     brand: String,
     description: String,
     image: String,
+    public_id: String,
     user_rating: Number,
     user_note: String,
   },

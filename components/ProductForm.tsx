@@ -22,13 +22,23 @@ export default function ProductForm({
   const [userRating, setUserRating] = useState(initialData.user_rating || 0);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imageSource, setImageSource] = useState<string | undefined>(
-    initialData.image || undefined
+    initialData.image || undefined,
   );
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     const formData = new FormData(event.target as HTMLFormElement);
     const data = Object.fromEntries(formData.entries());
+    if (initialData.image && !imageSource) {
+      const response = await fetch(`/api/images/delete`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(initialData.public_id),
+      });
+      if (!response.ok) {
+        console.error("Failed to delete image on cloudinary");
+      }
+    }
     if (imageFile) {
       const response = await fetch("/api/images/upload", {
         method: "POST",
@@ -40,6 +50,7 @@ export default function ProductForm({
         const result = await response.json();
         console.log("Image uploaded successfully:", result);
         data.image = result.url; // Assuming the API returns the image URL
+        data.public_id = result.public_id;
       }
     } else {
       data.image = imageSource || ""; // Use the initial image if no file is provided
@@ -49,7 +60,7 @@ export default function ProductForm({
 
   function handleChangeRating(
     _event: React.ChangeEvent<{}>,
-    newValue: number | null
+    newValue: number | null,
   ) {
     setUserRating(Number(newValue));
   }
