@@ -29,7 +29,8 @@ export default function ProductForm({
     event.preventDefault();
     const formData = new FormData(event.target as HTMLFormElement);
     const data = Object.fromEntries(formData.entries());
-    if (initialData.image && !imageSource) {
+    // image must be deleted either if there was an initial one that was deleted or if a new image was chosen from filesystem
+    if ((initialData.image && !imageSource) || imageFile) {
       const response = await fetch(`/api/images/delete`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
@@ -48,7 +49,6 @@ export default function ProductForm({
         console.error("Failed to upload image");
       } else {
         const result = await response.json();
-        console.log("Image uploaded successfully:", result);
         data.image = result.url; // Assuming the API returns the image URL
         data.public_id = result.public_id;
       }

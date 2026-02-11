@@ -46,14 +46,13 @@ export default async function handler(
   if (files.image) {
     file = files.image[0];
     const result = await cloudinary.v2.uploader.upload(file.filepath, {
-      folder: "nf",
-      public_id: providerId + ean, // image name = providerId + ean -> neue Bilder überschreiben die alten
+      folder: "yummys",
     });
 
     return res.status(200).json({
       message: "Image uploaded successfully",
       url: result.secure_url,
       public_id: result.public_id,
-    }); //Auf keinen Fall result returnen! Es enthält den API Key!
+    }); 
   }
 }
