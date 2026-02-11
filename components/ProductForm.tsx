@@ -29,8 +29,11 @@ export default function ProductForm({
     event.preventDefault();
     const formData = new FormData(event.target as HTMLFormElement);
     const data = Object.fromEntries(formData.entries());
-    // image must be deleted either if there was an initial one that was deleted or if a new image was chosen from filesystem
-    if ((initialData.image && !imageSource) || imageFile) {
+    // image must be deleted either if there was an initial one that was deleted or if there was an initial one and a new image was chosen from filesystem
+    if (
+      (initialData.image && !imageSource) ||
+      (initialData.image && imageFile)
+    ) {
       const response = await fetch(`/api/images/delete`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
@@ -121,7 +124,7 @@ export default function ProductForm({
         <Box
           component="fieldset"
           sx={{
-            // Kopiert das Styling von TextField
+            // copies styling from textfield
             border: "1px solid",
             borderColor: "rgba(0, 0, 0, 0.23)",
             borderRadius: 1,
