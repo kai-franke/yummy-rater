@@ -18,8 +18,8 @@ export default async function handler(
   }
   const id = req.body;
   if (id) {
-    await deleteImage(id);
-    return res.status(200).json({ message: "Image deleted successfully" });
+    const result = await deleteImage(id);
+    return res.status(result.result === "ok" ? 200 : 400).json(result);
   } else {
     return res
       .status(400)
