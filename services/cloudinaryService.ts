@@ -1,4 +1,5 @@
 import cloudinary from "cloudinary";
+import formidable from "formidable";
 
 // Cloudinary konfigurieren
 cloudinary.v2.config({
@@ -16,4 +17,9 @@ export async function deleteImage(publicId?: string) {
     console.error("Fehler beim Löschen des Bildes:", err);
     throw err;
   }
+}
+export async function createImage(file: formidable.File) {
+  return await cloudinary.v2.uploader.upload(file.filepath, {
+    folder: "yummys",
+  });
 }

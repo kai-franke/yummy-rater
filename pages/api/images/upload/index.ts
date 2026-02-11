@@ -1,4 +1,4 @@
-import cloudinary from "cloudinary";
+import { createImage } from "@/services/cloudinaryService";
 import formidable from "formidable";
 import { NextApiRequest, NextApiResponse } from "next";
 import { getToken } from "next-auth/jwt";
@@ -9,11 +9,6 @@ export const config = {
   },
 };
 
-cloudinary.v2.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_SECRET,
-});
 
 export default async function handler(
   req: NextApiRequest,
@@ -36,23 +31,19 @@ export default async function handler(
   let ean: string;
 
   if (Array.isArray(fields.ean)) {
-    ean = fields.ean[0]; // erstes Element nehmen
+    ean = fields.ean[0]; // first item from array
   } else if (typeof fields.ean === "string") {
-    ean = fields.ean; // einfach string
+    ean = fields.ean; // or directly the string
   } else {
     throw new Error("EAN fehlt");
   }
-  let file: formidable.File;
   if (files.image) {
-    file = files.image[0];
-    const result = await cloudinary.v2.uploader.upload(file.filepath, {
-      folder: "yummys",
-    });
+    const result = await createImage(files.image[0]);
 
     return res.status(200).json({
       message: "Image uploaded successfully",
       url: result.secure_url,
       public_id: result.public_id,
-    }); 
+    });
   }
 }
