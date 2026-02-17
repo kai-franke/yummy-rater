@@ -77,8 +77,18 @@ Requirements:
 
 ### Bottom Navigation Bar (always visible when signed in)
 - **Home** (house icon) → Scanner / Dashboard screen
-- **Yummies** (star icon) → My Products list
-- **Profile** (person icon) → User profile & sign out
+- **Yummies** (star icon) → My Products list (Screen 5)
+- **Profile** (person icon) → User profile & sign out (Screen 6)
+
+### Screen Overview
+| # | Screen | Triggered by |
+|---|---|---|
+| 1 | Home / Scanner | App start, bottom nav |
+| 2 | Product Card View | EAN found in My Yummies |
+| 3 | Add Product Form | EAN not found → user taps "Add to Yummies" |
+| 4 | Edit Product Form | Tapping "Edit" on Product Card View |
+| 5 | My Yummies List | Bottom nav "Yummies" |
+| 6 | Profile | Bottom nav "Profile" |
 
 ---
 
@@ -97,52 +107,109 @@ Requirements:
 - Use the device camera to scan EAN-8 and EAN-13 barcodes in real time
 - Use a JavaScript barcode scanning library (e.g. `@zxing/library`, `quagga2`, or `html5-qrcode`)
 - Show visual scan focus markers / overlay on the camera feed
-- On successful scan: auto-navigate to the Add/Edit Product screen with the detected EAN
 - Request camera permission gracefully, show an error message if denied
 - Include a manual fallback: text input for typing the EAN code
 
+**After scan or manual EAN entry – lookup logic (IMPORTANT)**:
+
+```
+EAN detected/entered
+        │
+        ▼
+Is EAN in user's "My Yummies"?
+        │
+   YES ─┤─ NO
+        │       │
+        ▼       ▼
+  Show Product  Show "Not in your Yummies" screen
+  Card View     with "Add to Yummies" button
+  (Screen 2)           │
+                       ▼ (user taps "Add to Yummies")
+               Query Open Food Facts API
+                       │
+              Found ───┤─── Not found
+                │              │
+                ▼              ▼
+         Pre-filled       Empty form
+           form            (Screen 3)
+               └──────┬───────┘
+                       ▼
+              User edits + rates + saves
+                       │
+                       ▼
+               Product saved to Supabase
+               → Navigate to Product Card View
+```
+
 ---
 
-### Screen 2: Add Product
+### Screen 2: Product Card View (Existing Product)
 
-**Triggered when**: A barcode is scanned or a manual EAN is entered.
+**Triggered when**: EAN is found in the user's "My Yummies".
 
-**Behavior**:
-1. Check if the product (EAN) already exists in the user's collection
-   - If yes: navigate to **Edit Product** screen instead (pre-filled with existing data)
-   - If no: fetch from Open Food Facts API and pre-fill the form
-2. Show a form with the following fields:
-   - Product image (uploaded by user or fetched from Open Food Facts) – tappable image area
-   - **Name** (text input, pre-filled from API)
-   - **Brand** (text input, pre-filled from API)
-   - **Description** (multi-line text, pre-filled from API)
-   - **Your Rating** (star rating widget, 0–5 in 0.5 steps)
-   - **Your Note** (multi-line text input)
-3. Image upload:
-   - User can tap the product image to open the camera or photo gallery
-   - Upload image to **Supabase Storage** (bucket: `product-images`, path: `{userId}/{ean}`)
-   - Show upload progress indicator
-4. Save button: POST to Supabase → navigate back to Yummies list with success toast
+**Purpose**: Display the saved product with all details the user previously entered.
 
-**Open Food Facts API call**:
-```
-GET https://world.openfoodfacts.org/api/v3/product/{ean}.json
-```
-Extract: `product.product_name` (or `product_name_de`), `product.brands`, `product.image_url`, `product.generic_name` (or `generic_name_de`). Show a subtle "Product not found – please fill in manually" message if the API returns no result.
+**Layout**:
+- Product image (full width, rounded corners, or placeholder if no image)
+- Product name (large, bold)
+- Brand (secondary text)
+- Description (collapsible if long)
+- **User Rating**: visual star display (amber stars, 0–5 in 0.5 steps), read-only
+- **User Note**: displayed as a styled quote/note block (read-only)
+- **Edit button** (top right or bottom): navigates to Edit Product screen (Screen 4)
+- Back button: returns to Scanner screen
 
 ---
 
-### Screen 3: Edit Product
+### Screen 3: Add Product Form
 
-**Same layout as Add Product**, but:
+**Triggered when**: EAN is NOT in user's Yummies AND user confirms "Add to Yummies".
+
+**Step 1 – "Not in your Yummies" screen**:
+- Show the scanned EAN number
+- Message: "This product is not in your Yummies yet."
+- Large **"Add to Yummies"** button (primary color)
+- Secondary **"Scan again"** button to return to scanner
+
+**Step 2 – After tapping "Add to Yummies"**:
+- Show a loading spinner while querying Open Food Facts API:
+  ```
+  GET https://world.openfoodfacts.org/api/v3/product/{ean}.json
+  ```
+  Extract: `product.product_name` (or `product_name_de`), `product.brands`, `product.image_url`, `product.generic_name` (or `generic_name_de`)
+- If API returns data: show pre-filled form with a subtle banner "Product data loaded – please review"
+- If API returns no data: show empty form with a subtle banner "Product not found – please fill in manually"
+
+**Form fields** (all editable by the user):
+- Product image – tappable image area (opens camera or photo gallery)
+- **Name** (text input)
+- **Brand** (text input)
+- **Description** (multi-line text input)
+- **Your Rating** (interactive star widget, 0–5 in 0.5 steps, required)
+- **Your Note** (multi-line text input, optional)
+
+**Image upload**:
+- Upload image to **Supabase Storage** (bucket: `product-images`, path: `{userId}/{ean}`)
+- Show upload progress indicator
+
+**Save button**: INSERT into Supabase `products` table → navigate to Product Card View (Screen 2) with success toast
+
+---
+
+### Screen 4: Edit Product
+
+**Triggered when**: User taps "Edit" on the Product Card View (Screen 2).
+
+**Same form layout as Add Product (Screen 3)**, but:
 - All fields pre-filled with existing data from Supabase
-- Save button triggers a `UPDATE` on the existing row
-- Show a **Delete** button (red, with confirmation dialog) at the bottom
-- Confirmation dialog text: "Do you really want to delete [product name]? This cannot be undone."
+- Save button triggers an `UPDATE` on the existing row → navigate back to Product Card View
+- Show a **Delete** button (red, at the bottom) with a confirmation dialog:
+  "Do you really want to delete [product name]? This cannot be undone."
+  → On confirm: DELETE from Supabase → navigate to My Yummies list with success toast
 
 ---
 
-### Screen 4: My Yummies (Product List)
+### Screen 5: My Yummies (Product List)
 
 **Purpose**: Display all products the user has rated.
 
@@ -155,7 +222,7 @@ Extract: `product.product_name` (or `product_name_de`), `product.brands`, `produ
   - Brand (secondary text, smaller)
   - Star rating (visual stars in amber/yellow)
   - User note preview (truncated to 1 line if long)
-  - Tap to open Edit Product screen
+  - **Tap card → navigate to Product Card View (Screen 2)**
 
 **Search/Filter**:
 - Fuzzy search across: name, brand, description, user_note, EAN
@@ -164,11 +231,11 @@ Extract: `product.product_name` (or `product_name_de`), `product.brands`, `produ
 
 **Empty state**: If the user has no products, show an illustration + message: "No Yummies yet! Scan a product to get started." with a button navigating to the Scanner.
 
-**FAB**: A floating action button (+) to open the scanner directly.
+**FAB**: A floating action button (camera icon) to open the scanner directly.
 
 ---
 
-### Screen 5: Profile
+### Screen 6: Profile
 
 **Layout**:
 - User avatar (circle, from OAuth profile image)
@@ -243,11 +310,18 @@ Extract: `product.product_name` (or `product_name_de`), `product.brands`, `produ
 ## Summary of Key User Flows
 
 1. **First open** → Sign-in screen → OAuth → Home/Scanner
-2. **Scan product** → Camera opens → EAN detected → Open Food Facts lookup → Pre-filled form → User rates + saves → Product appears in Yummies list
-3. **View Yummies** → List of all rated products → Search/filter → Tap product → Edit/delete
-4. **Manual entry** → Type EAN in text field → Same flow as scan
-5. **Sign out** → Profile screen → Confirm → Back to sign-in screen
-6. **Offline** → Banner shown → Can browse cached products → Scanner disabled
+
+2. **Scan known product** → EAN detected → EAN found in My Yummies → **Product Card View** (shows saved rating + note) → optional: tap Edit
+
+3. **Scan new product** → EAN detected → EAN NOT in My Yummies → "Not in your Yummies" screen → User taps "Add to Yummies" → Open Food Facts API lookup → Pre-filled or empty form → User edits, rates, adds note → Save → Product Card View
+
+4. **Manual entry** → User types EAN → same flow as scan (steps 2 or 3 depending on whether product exists)
+
+5. **Browse Yummies** → My Yummies list → Search/filter → Tap product card → Product Card View → optional: tap Edit → Edit form → Save or Delete
+
+6. **Sign out** → Profile screen → Confirm → Back to sign-in screen
+
+7. **Offline** → Banner shown → Can browse cached products → Scanner and add/edit disabled
 
 ---
 
