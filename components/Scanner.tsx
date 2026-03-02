@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import Quagga from "@ericblade/quagga2";
-import { Box, Alert } from "@mui/material";
+import { Box, Alert, Slider, Typography } from "@mui/material";
 import { ScannerProps } from "@/types/scanner";
 import styled from "@emotion/styled";
 import { Global, css } from "@emotion/react";
@@ -54,13 +54,28 @@ const CameraErrorMessage = styled(Alert)`
   transform: translate(-50%, -50%);
 `;
 
+type ZoomRange = { min: number; max: number; step: number };
+
 export default function Scanner({
   onScan,
   onStartScanning,
   isScanning,
 }: ScannerProps) {
   const [hasError, setHasError] = useState(false);
+  const [zoom, setZoom] = useState(1);
+  const [zoomRange, setZoomRange] = useState<ZoomRange | null>(null);
   const videoRef = useRef();
+  const trackRef = useRef<MediaStreamTrack | null>(null);
+
+  const handleZoomChange = async (_: Event, value: number | number[]) => {
+    const newZoom = value as number;
+    setZoom(newZoom);
+    if (trackRef.current) {
+      await trackRef.current.applyConstraints({
+        advanced: [{ zoom: newZoom } as any],
+      });
+    }
+  };
 
   useEffect(() => {
     if (isScanning) {
@@ -89,11 +104,16 @@ export default function Scanner({
           }
           Quagga.start();
           const track = Quagga.CameraAccess.getActiveTrack();
+          trackRef.current = track ?? null;
           const capabilities = track?.getCapabilities() as any;
 
-          if (capabilities.zoom) {
+          if (capabilities?.zoom) {
+            const { min, max, step } = capabilities.zoom;
+            const initialZoom = Math.max(1, min);
+            setZoomRange({ min, max, step: step ?? 0.1 });
+            setZoom(initialZoom);
             await track?.applyConstraints({
-              advanced: [{ zoom: 2 } as any],
+              advanced: [{ zoom: initialZoom } as any],
             });
           }
         },
@@ -111,6 +131,9 @@ export default function Scanner({
       // Clean up Quagga when the component is unmounted
       return () => {
         Quagga.stop();
+        trackRef.current = null;
+        setZoomRange(null);
+        setZoom(1);
       };
     }
   }, [isScanning, onScan]);
@@ -147,6 +170,22 @@ export default function Scanner({
         )}
         {isScanning && <VideoBox ref={videoRef} id="video" />}
       </ScannerContainer>
+      {zoomRange && isScanning && (
+        <Box width="100%" maxWidth="640px" px={2} pt={1}>
+          <Typography variant="caption" color="text.secondary">
+            Zoom: {zoom.toFixed(1)}×
+          </Typography>
+          <Slider
+            value={zoom}
+            min={zoomRange.min}
+            max={zoomRange.max}
+            step={zoomRange.step}
+            onChange={handleZoomChange}
+            aria-label="Camera zoom"
+            size="small"
+          />
+        </Box>
+      )}
     </Box>
   );
 }
