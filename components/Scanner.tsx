@@ -1,9 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import Quagga from "@ericblade/quagga2";
-import {
-  Box,
-  Alert
-} from "@mui/material";
+import { Box, Alert } from "@mui/material";
 import { ScannerProps } from "@/types/scanner";
 import styled from "@emotion/styled";
 import { Global, css } from "@emotion/react";
@@ -57,7 +54,11 @@ const CameraErrorMessage = styled(Alert)`
   transform: translate(-50%, -50%);
 `;
 
-export default function Scanner({ onScan, onStartScanning, isScanning }: ScannerProps) {
+export default function Scanner({
+  onScan,
+  onStartScanning,
+  isScanning,
+}: ScannerProps) {
   const [hasError, setHasError] = useState(false);
   const videoRef = useRef();
 
@@ -77,7 +78,7 @@ export default function Scanner({ onScan, onStartScanning, isScanning }: Scanner
             readers: ["ean_reader"],
           },
         },
-        (err) => {
+        async (err) => {
           if (err) {
             if (err.name === "NotAllowedError") {
               setHasError(true);
@@ -87,7 +88,15 @@ export default function Scanner({ onScan, onStartScanning, isScanning }: Scanner
             return;
           }
           Quagga.start();
-        }
+          const track = Quagga.CameraAccess.getActiveTrack();
+          const capabilities = track?.getCapabilities() as any;
+
+          if (capabilities.zoom) {
+            await track?.applyConstraints({
+              advanced: [{ zoom: 2 } as any],
+            });
+          }
+        },
       );
 
       Quagga.onDetected((result) => {
