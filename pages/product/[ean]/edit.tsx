@@ -24,7 +24,6 @@ export default function EditProductPage({ userData }: { userData: IUser }) {
       console.error("Failed to edit product");
     } else {
       const result = await response.json();
-      console.log("Product edited successfully:", result);
       mutate("/api/user"); // Revalidate the user data
       router.push(`/products`); // Redirect to the products page after editing
     }

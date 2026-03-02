@@ -9,6 +9,7 @@ export interface ProductFormProps {
     brand?: string;
     description?: string;
     image?: string;
+    public_id?: string;
     user_rating?: number;
     user_note?: string;
   };

@@ -3,10 +3,11 @@ import dbConnect from "@/lib/db/dbconnect";
 import { getToken } from "next-auth/jwt";
 import User from "@/models/User";
 import { IProduct } from "@/types/product";
+import { deleteImage } from "@/services/cloudinaryService";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   if (req.method !== "PUT" && req.method !== "DELETE") {
     return res
@@ -33,25 +34,38 @@ export default async function handler(
     }
 
     const user = await User.findOne({ provider_id: providerId });
-    const index = user?.products.findIndex(
-      (product) => product.ean === Number(ean)
+
+    if (!user) throw new Error("User not found");
+
+    const productToDelete = user.products.find(
+      (product) => product.ean === Number(ean),
     );
 
-    if (index === -1) {
-      return res.status(404).json({ message: "Product not found" });
+    if (!productToDelete) throw new Error("Product not found");
+
+    if (productToDelete.public_id) {
+      await deleteImage(productToDelete.public_id);
     }
 
     await User.updateOne(
       { provider_id: providerId },
-      { $pull: { products: { ean: Number(ean) } } }
+      { $pull: { products: { ean: Number(ean) } } },
     );
 
     return res.status(200).json({ message: "Product deleted successfully" });
   }
 
   // update product:
-  const { ean, name, brand, description, image, user_rating, user_note } =
-    req.body;
+  const {
+    ean,
+    name,
+    brand,
+    description,
+    image,
+    public_id,
+    user_rating,
+    user_note,
+  } = req.body;
 
   // Überprüfe, ob 'ean' vorhanden und eine Zahl ist
   if (!ean || isNaN(Number(ean))) {
@@ -67,6 +81,7 @@ export default async function handler(
     brand: brand ?? undefined,
     description: description ?? undefined,
     image: image ?? undefined,
+    public_id: public_id ?? undefined,
     user_rating: Number(user_rating) ?? undefined,
     user_note: user_note ?? undefined,
   };
@@ -83,10 +98,11 @@ export default async function handler(
         "products.$.brand": productData.brand,
         "products.$.description": productData.description,
         "products.$.image": productData.image,
+        "products.$.public_id": productData.public_id,
         "products.$.user_rating": productData.user_rating,
         "products.$.user_note": productData.user_note,
       },
-    }
+    },
   );
   res.status(200).json({ message: "Product updated successfully", result });
   return;
