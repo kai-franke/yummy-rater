@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import Quagga from "@ericblade/quagga2";
-import { Box, Alert } from "@mui/material";
+import { Box, Alert, Slider } from "@mui/material";
 import { ScannerProps } from "@/types/scanner";
 import styled from "@emotion/styled";
 import { Global, css } from "@emotion/react";
@@ -61,6 +61,7 @@ export default function Scanner({
 }: ScannerProps) {
   const [hasError, setHasError] = useState(false);
   const videoRef = useRef();
+  const [zoomLevel, setZoomLevel] = useState(2);
 
   useEffect(() => {
     if (isScanning) {
@@ -93,7 +94,7 @@ export default function Scanner({
 
           if (capabilities.zoom) {
             await track?.applyConstraints({
-              advanced: [{ zoom: 2 } as any],
+              advanced: [{ zoom: zoomLevel } as any],
             });
           }
         },
@@ -114,7 +115,6 @@ export default function Scanner({
       };
     }
   }, [isScanning, onScan]);
-
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center">
@@ -140,6 +140,7 @@ export default function Scanner({
           rotation={180}
           style={{ bottom: "15%", right: "6%" }}
         />
+
         {hasError && (
           <CameraErrorMessage severity="error">
             Please allow access to the camera.
@@ -147,6 +148,13 @@ export default function Scanner({
         )}
         {isScanning && <VideoBox ref={videoRef} id="video" />}
       </ScannerContainer>
+      <Slider
+        value={zoomLevel}
+        onChange={(_, value) => setZoomLevel(value as number)}
+        min={1}
+        max={5}
+        step={0.1}
+      />
     </Box>
   );
 }
